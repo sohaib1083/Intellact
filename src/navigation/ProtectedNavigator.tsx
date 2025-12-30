@@ -1,12 +1,11 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
-
-import {Home, Profile, EditProfile, MyCourses} from '../screens';
+import {Home, Profile} from '../screens';
 import {useScreenOptions, useTranslation} from '../hooks';
 
 const Stack = createStackNavigator();
 
-export default () => {
+const ProtectedNavigator = () => {
   const {t} = useTranslation();
   const screenOptions = useScreenOptions();
 
@@ -17,24 +16,13 @@ export default () => {
         component={Home}
         options={{title: t('navigation.home')}}
       />
-
       <Stack.Screen
         name="Profile"
         component={Profile}
         options={{headerShown: false}}
       />
-
-      <Stack.Screen
-        name="EditProfile"
-        component={EditProfile}
-        options={{headerShown: false}}
-      />
-
-      <Stack.Screen
-        name="MyCourses"
-        component={MyCourses}
-        options={{headerShown: false}}
-      />
     </Stack.Navigator>
   );
 };
+
+export default ProtectedNavigator;

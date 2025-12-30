@@ -183,16 +183,19 @@ const Typography = (props: ITextProps) => {
   const textID =
     Platform.OS === 'android' ? {accessibilityLabel: id} : {testID: id};
 
+  // Safety check for children to prevent null/undefined rendering issues
+  const safeChildren = children || '';
+
   if (gradient) {
     return (
       <MaskedView
         maskElement={
           <Text {...textID} {...rest} style={textStyles}>
-            {children}
+            {safeChildren}
           </Text>
         }>
         <LinearGradient
-          colors={gradient}
+          colors={gradient.length >= 2 ? gradient as [string, string, ...string[]] : [gradient[0] || '#000', gradient[0] || '#000']}
           end={end || [0.2, 0]}
           start={start || [0, 0]}
           style={{flex: 1, height: gradientHeight, flexWrap: 'wrap'}}
@@ -203,7 +206,7 @@ const Typography = (props: ITextProps) => {
 
   return (
     <Text {...textID} {...rest} style={textStyles}>
-      {children}
+      {safeChildren}
     </Text>
   );
 };

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "385298882792",
+    "project_id": "intellact-6c3fb",
+    "storage_bucket": "intellact-6c3fb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:385298882792:android:f8ae7f766e23f87d02e95d",
+        "android_client_info": {
+          "package_name": "com.nexuslabs.intellact"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDDaQxPqSbZdDpXu53IFFuPN9T9Hb50QQU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -14,17 +14,17 @@ export const COLORS: ThemeColors = {
 
   // base colors
   /** UI color for #primary */
-  primary: '#CB0C9F',
+  primary: '#2D3561', // Professional deep navy blue
   /** UI color for #secondary */
-  secondary: '#627594', // '#8392AB',
+  secondary: '#5B6B9E', // Complementary slate blue
   /** UI color for #tertiary */
-  tertiary: '#E8AE4C',
+  tertiary: '#4A90E2', // Vibrant accent blue
 
   // non-colors
   black: '#252F40',
   white: '#FFFFFF',
 
-  dark: '#252F40',
+  dark: '#1A2037', // Darker navy for depth
   light: '#E9ECEF',
 
   // gray variations
@@ -50,15 +50,15 @@ export const COLORS: ThemeColors = {
   overlay: 'rgba(0,0,0,0.3)',
 
   /** UI color for input borderColor on focus */
-  focus: '#E293D3',
+  focus: '#4A90E2', // Bright blue focus
   input: '#252F40',
 
   /** UI color for switch checked/active color */
-  switchOn: '#3A416F',
+  switchOn: '#2D3561', // Primary navy
   switchOff: '#E9ECEF',
 
   /** UI color for checkbox icon checked/active color */
-  checkbox: ['#3A416F', '#141727'],
+  checkbox: ['#2D3561', '#1A2037'], // Navy gradient
   checkboxIcon: '#FFFFFF',
 
   /** social colors */
@@ -67,28 +67,28 @@ export const COLORS: ThemeColors = {
   dribbble: '#EA4C89',
 
   /** icon tint color */
-  icon: '#8392AB',
+  icon: '#5B6B9E', // Secondary blue
 
   /** blur tint color */
   blurTint: 'light',
 
   /** product link color */
-  link: '#CB0C9F',
+  link: '#4A90E2', // Accent blue
 };
 
 export const GRADIENTS: ThemeGradients = {
-  primary: ['#FF0080', '#7928CA'],
-  secondary: ['#A8B8D8', '#627594'],
-  info: ['#21D4FD', '#2152FF'],
+  primary: ['#2D3561', '#1A2037'], // Professional navy gradient
+  secondary: ['#5B6B9E', '#4A5A8E'], // Slate blue gradient
+  info: ['#4A90E2', '#357ABD'], // Bright blue gradient
   success: ['#98EC2D', '#17AD37'],
   warning: ['#FBCF33', '#F53939'],
   danger: ['#FF667C', '#EA0606'],
 
   light: ['#EBEFF4', '#CED4DA'],
-  dark: ['#3A416F', '#141727'],
+  dark: ['#2D3561', '#1A2037'], // Navy gradient
 
   white: [String(COLORS.white), '#EBEFF4'],
-  black: [String(COLORS.black), '#141727'],
+  black: [String(COLORS.black), '#1A2037'],
 
   divider: ['rgba(255,255,255,0.3)', 'rgba(102, 116, 142, 0.6)'],
   menu: [

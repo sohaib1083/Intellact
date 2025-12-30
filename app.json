@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "rn-soft-ui-kit-free",
-    "slug": "rn-soft-ui-kit-free",
-    "description": "React Native - Soft UI Kit - Free",
+    "name": "Intellact",
+    "slug": "intellact",
+    "description": "Intellact - Your Intelligent Assistant",
     "primaryColor": "#CB0C9F",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -22,6 +22,7 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.nexuslabs.intellact",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#CB0C9F"
@@ -29,6 +30,9 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      "expo-localization"
+    ]
   }
 }

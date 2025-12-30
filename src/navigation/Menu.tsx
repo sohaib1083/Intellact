@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {Alert, Animated, Linking, StyleSheet} from 'react-native';
+import {Alert, Linking, StyleSheet, Animated} from 'react-native';
 
 import {
   createDrawerNavigator,
@@ -10,7 +10,8 @@ import {
 
 import Screens from './Screens';
 import {Block, Text, Switch, Button, Image} from '../components';
-import {useData, useTheme, useTranslation} from '../hooks';
+import {useData, useTheme, useTranslation, useAuth} from '../hooks';
+import {signOut} from '../services/auth';
 
 const Drawer = createDrawerNavigator();
 
@@ -67,6 +68,7 @@ const DrawerContent = (
   const {navigation} = props;
   const {t} = useTranslation();
   const {isDark, handleIsDark} = useData();
+  const {user, userProfile} = useAuth();
   const [active, setActive] = useState('Home');
   const {assets, colors, gradients, sizes} = useTheme();
   const labelColor = colors.text;
@@ -82,16 +84,25 @@ const DrawerContent = (
 
   const handleWebLink = useCallback((url: string) => Linking.openURL(url), []);
 
-  // screen list for Drawer menu
-  const screens = [
+  const handleLogout = useCallback(async () => {
+    try {
+      await signOut();
+      // Navigate to Welcome screen after logout
+      handleNavigation('Welcome');
+    } catch (error) {
+      console.error('Logout error:', error);
+      Alert.alert('Error', 'Failed to logout. Please try again.');
+    }
+  }, [handleNavigation]);
+
+  // screen list for Drawer menu - conditional based on auth state
+  const screens = user ? [
+    // Authenticated user screens
     {name: t('screens.home'), to: 'Home', icon: assets.home},
-    {name: t('screens.components'), to: 'Components', icon: assets.components},
-    {name: t('screens.articles'), to: 'Articles', icon: assets.document},
-    {name: t('screens.rental'), to: 'Pro', icon: assets.rental},
     {name: t('screens.profile'), to: 'Profile', icon: assets.profile},
-    {name: t('screens.settings'), to: 'Pro', icon: assets.settings},
-    {name: t('screens.register'), to: 'Register', icon: assets.register},
-    {name: t('screens.extra'), to: 'Pro', icon: assets.extras},
+  ] : [
+    // Non-authenticated user screens
+    {name: t('screens.home'), to: 'Home', icon: assets.home},
   ];
 
   return (
@@ -115,9 +126,7 @@ const DrawerContent = (
             <Text size={12} semibold>
               {t('app.name')}
             </Text>
-            <Text size={12} semibold>
-              {t('app.native')}
-            </Text>
+           
           </Block>
         </Block>
 
@@ -162,50 +171,47 @@ const DrawerContent = (
           gradient={gradients.menu}
         />
 
-        <Text semibold transform="uppercase" opacity={0.5}>
-          {t('menu.documentation')}
-        </Text>
-
-        <Button
-          row
-          justify="flex-start"
-          marginTop={sizes.sm}
-          marginBottom={sizes.s}
-          onPress={() =>
-            handleWebLink('https://github.com/creativetimofficial')
-          }>
-          <Block
-            flex={0}
-            radius={6}
-            align="center"
-            justify="center"
-            width={sizes.md}
-            height={sizes.md}
-            marginRight={sizes.s}
-            gradient={gradients.white}>
-            <Image
-              radius={0}
-              width={14}
-              height={14}
-              color={colors.black}
-              source={assets.documentation}
-            />
-          </Block>
-          <Text p color={labelColor}>
-            {t('menu.started')}
-          </Text>
-        </Button>
-
         <Block row justify="space-between" marginTop={sizes.sm}>
           <Text color={labelColor}>{t('darkMode')}</Text>
           <Switch
             checked={isDark}
             onPress={(checked) => {
               handleIsDark(checked);
-              Alert.alert(t('pro.title'), t('pro.alert'));
             }}
           />
         </Block>
+
+        {/* Logout button for authenticated users */}
+        {user && (
+          <Button
+            row
+            justify="flex-start"
+            marginTop={sizes.l}
+            marginBottom={sizes.s}
+            onPress={handleLogout}>
+            <Block
+              flex={0}
+              radius={6}
+              align="center"
+              justify="center"
+              width={sizes.md}
+              height={sizes.md}
+              marginRight={sizes.s}
+              gradient={gradients.danger}>
+              <Image
+                radius={0}
+                width={14}
+                height={14}
+                source={assets.arrow}
+                transform={[{rotate: '180deg'}]}
+                color={colors.white}
+              />
+            </Block>
+            <Text p semibold color={labelColor}>
+              {t('common.logout')}
+            </Text>
+          </Button>
+        )}
       </Block>
     </DrawerContentScrollView>
   );

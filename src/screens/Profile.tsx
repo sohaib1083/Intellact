@@ -1,224 +1,451 @@
-import React, {useCallback} from 'react';
-import {Platform, Linking} from 'react-native';
-import {Ionicons} from '@expo/vector-icons';
-import {useNavigation} from '@react-navigation/core';
+import React, { useState } from 'react';
+import {
+  ScrollView,
+  TouchableOpacity,
+  Text as RNText,
+  View,
+  Platform,
+  Dimensions,
+  Keyboard,
+  TouchableWithoutFeedback,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/core';
 
-import {Block, Button, Image, Text} from '../components/';
-import {useData, useTheme, useTranslation} from '../hooks/';
+import { Block, Button, Image } from '../components/';
+import { useTheme, useAuth } from '../hooks/';
+import { signOut } from '../services/auth';
 
-const isAndroid = Platform.OS === 'android';
+const { width, height } = Dimensions.get('window');
+const isSmallScreen = height < 700;
 
 const Profile = () => {
-  const {user} = useData();
-  const {t} = useTranslation();
+  const { user, userProfile } = useAuth();
   const navigation = useNavigation();
-  const {assets, colors, sizes} = useTheme();
+  const { assets, colors, sizes, gradients } = useTheme();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  const IMAGE_SIZE = (sizes.width - (sizes.padding + sizes.sm) * 2) / 3;
-  const IMAGE_VERTICAL_SIZE =
-    (sizes.width - (sizes.padding + sizes.sm) * 2) / 2;
-  const IMAGE_MARGIN = (sizes.width - IMAGE_SIZE * 3 - sizes.padding * 2) / 2;
-  const IMAGE_VERTICAL_MARGIN =
-    (sizes.width - (IMAGE_VERTICAL_SIZE + sizes.sm) * 2) / 2;
+  const horizontalPadding = isSmallScreen ? sizes.sm : sizes.padding;
 
-  const handleSocialLink = useCallback(
-    (type: 'twitter' | 'dribbble') => {
-      const url =
-        type === 'twitter'
-          ? `https://twitter.com/${user?.social?.twitter}`
-          : `https://dribbble.com/${user?.social?.dribbble}`;
+  // Get user display info
+  const displayName = userProfile?.name || user?.displayName || user?.email?.split('@')[0] || 'Learner';
+  const userEmail = user?.email || 'No email';
+  const userRole = userProfile?.role === 'learner' ? 'Learner' : 'Seller';
+  const memberSince = userProfile?.createdAt 
+    ? new Date(userProfile.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+    : new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
 
-      try {
-        Linking.openURL(url);
-      } catch (error) {
-        alert(`Cannot open URL: ${url}`);
-      }
+  // Profile stats
+  const stats = {
+    coursesEnrolled: 0,
+    coursesCompleted: 0,
+    hoursLearned: 0,
+    certificates: 0,
+  };
+
+  // Menu items
+  const menuSections = [
+    {
+      title: 'Account',
+      items: [
+        { id: 'edit-profile', label: 'Edit Profile', badge: null },
+        { id: 'my-courses', label: 'My Courses', badge: stats.coursesEnrolled },
+        { id: 'certificates', label: 'Certificates', badge: stats.certificates },
+        { id: 'payment', label: 'Payment Methods', badge: null },
+      ],
     },
-    [user],
-  );
+    {
+      title: 'Preferences',
+      items: [
+        { id: 'notifications', label: 'Notifications', badge: null },
+        { id: 'downloads', label: 'Downloads', badge: null },
+        { id: 'language', label: 'Language', badge: 'English' },
+        { id: 'theme', label: 'Appearance', badge: 'Light' },
+      ],
+    },
+    {
+      title: 'Support',
+      items: [
+        { id: 'help', label: 'Help Center', badge: null },
+        { id: 'feedback', label: 'Send Feedback', badge: null },
+        { id: 'about', label: 'About Intellact', badge: null },
+      ],
+    },
+  ];
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await signOut();
+      // Navigation will be handled by auth state change
+    } catch (error) {
+      console.error('Logout error:', error);
+      setIsLoggingOut(false);
+    }
+  };
+
+  const handleMenuPress = (itemId: string) => {
+    console.log('Menu item pressed:', itemId);
+    
+    switch (itemId) {
+      case 'edit-profile':
+        navigation.navigate('EditProfile' as never);
+        break;
+      case 'my-courses':
+        navigation.navigate('MyCourses' as never);
+        break;
+      case 'certificates':
+        // TODO: Navigate to Certificates screen
+        console.log('Navigate to Certificates');
+        break;
+      default:
+        console.log('Feature not yet implemented:', itemId);
+    }
+  };
 
   return (
-    <Block safe marginTop={sizes.md}>
-      <Block
-        scroll
-        paddingHorizontal={sizes.s}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{paddingBottom: sizes.padding}}>
-        <Block flex={0}>
-          <Image
-            background
-            resizeMode="cover"
-            padding={sizes.sm}
-            paddingBottom={sizes.l}
-            radius={sizes.cardRadius}
-            source={assets.background}>
-            <Button
-              row
-              flex={0}
-              justify="flex-start"
-              onPress={() => navigation.goBack()}>
-              <Image
-                radius={0}
-                width={10}
-                height={18}
-                color={colors.white}
-                source={assets.arrow}
-                transform={[{rotate: '180deg'}]}
-              />
-              <Text p white marginLeft={sizes.s}>
-                {t('profile.title')}
-              </Text>
-            </Button>
-            <Block flex={0} align="center">
-              <Image
-                width={64}
-                height={64}
-                marginBottom={sizes.sm}
-                source={{uri: user?.avatar}}
-              />
-              <Text h5 center white>
-                {user?.name}
-              </Text>
-              <Text p center white>
-                {user?.department}
-              </Text>
-              <Block row marginVertical={sizes.m}>
-                <Button
-                  white
-                  outlined
-                  shadow={false}
-                  radius={sizes.m}
-                  onPress={() => {
-                    alert(`Follow ${user?.name}`);
-                  }}>
-                  <Block
-                    justify="center"
-                    radius={sizes.m}
-                    paddingHorizontal={sizes.m}
-                    color="rgba(255,255,255,0.2)">
-                    <Text white bold transform="uppercase">
-                      {t('common.follow')}
-                    </Text>
-                  </Block>
-                </Button>
-                <Button
-                  shadow={false}
-                  radius={sizes.m}
-                  marginHorizontal={sizes.sm}
-                  color="rgba(255,255,255,0.2)"
-                  outlined={String(colors.white)}
-                  onPress={() => handleSocialLink('twitter')}>
-                  <Ionicons
-                    size={18}
-                    name="logo-twitter"
-                    color={colors.white}
-                  />
-                </Button>
-                <Button
-                  shadow={false}
-                  radius={sizes.m}
-                  color="rgba(255,255,255,0.2)"
-                  outlined={String(colors.white)}
-                  onPress={() => handleSocialLink('dribbble')}>
-                  <Ionicons
-                    size={18}
-                    name="logo-dribbble"
-                    color={colors.white}
-                  />
-                </Button>
-              </Block>
-            </Block>
-          </Image>
-
-          {/* profile: stats */}
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <Block safe flex={1} color={colors.light}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: sizes.xxl }}
+          keyboardShouldPersistTaps="handled"
+        >
+          {/* Header with Gradient Background */}
           <Block
-            flex={0}
-            radius={sizes.sm}
-            shadow={!isAndroid} // disabled shadow on Android due to blur overlay + elevation issue
-            marginTop={-sizes.l}
-            marginHorizontal="8%"
-            color="rgba(255,255,255,0.2)">
-            <Block
-              row
-              blur
-              flex={0}
-              intensity={100}
-              radius={sizes.sm}
-              overflow="hidden"
-              tint={colors.blurTint}
-              justify="space-evenly"
-              paddingVertical={sizes.sm}
-              renderToHardwareTextureAndroid>
-              <Block align="center">
-                <Text h5>{user?.stats?.posts}</Text>
-                <Text>{t('profile.posts')}</Text>
-              </Block>
-              <Block align="center">
-                <Text h5>{(user?.stats?.followers || 0) / 1000}k</Text>
-                <Text>{t('profile.followers')}</Text>
-              </Block>
-              <Block align="center">
-                <Text h5>{(user?.stats?.following || 0) / 1000}k</Text>
-                <Text>{t('profile.following')}</Text>
-              </Block>
-            </Block>
-          </Block>
-
-          {/* profile: about me */}
-          <Block paddingHorizontal={sizes.sm}>
-            <Text h5 semibold marginBottom={sizes.s} marginTop={sizes.sm}>
-              {t('profile.aboutMe')}
-            </Text>
-            <Text p lineHeight={26}>
-              {user?.about}
-            </Text>
-          </Block>
-
-          {/* profile: photo album */}
-          <Block paddingHorizontal={sizes.sm} marginTop={sizes.s}>
-            <Block row align="center" justify="space-between">
-              <Text h5 semibold>
-                {t('common.album')}
-              </Text>
-              <Button>
-                <Text p primary semibold>
-                  {t('common.viewall')}
-                </Text>
-              </Button>
-            </Block>
-            <Block row justify="space-between" wrap="wrap">
-              <Image
-                resizeMode="cover"
-                source={assets?.photo1}
+            gradient={gradients.primary}
+            paddingHorizontal={horizontalPadding}
+            paddingTop={sizes.l}
+            paddingBottom={sizes.xxl}
+          >
+            {/* Profile Info */}
+            <Block align="center">
+              {/* Avatar */}
+              <Block
                 style={{
-                  width: IMAGE_VERTICAL_SIZE + IMAGE_MARGIN / 2,
-                  height: IMAGE_VERTICAL_SIZE * 2 + IMAGE_VERTICAL_MARGIN,
+                  width: 100,
+                  height: 100,
+                  borderRadius: 50,
+                  backgroundColor: colors.white,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  shadowColor: '#000',
+                  shadowOpacity: 0.15,
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowRadius: 12,
+                  elevation: 8,
+                  marginBottom: sizes.m,
                 }}
-              />
-              <Block marginLeft={sizes.m}>
-                <Image
-                  resizeMode="cover"
-                  source={assets?.photo2}
-                  marginBottom={IMAGE_VERTICAL_MARGIN}
+              >
+                <RNText style={{ fontSize: 48, color: colors.primary }}>
+                  {displayName.charAt(0).toUpperCase()}
+                </RNText>
+              </Block>
+
+              {/* Name */}
+              <RNText
+                style={{
+                  fontSize: 26,
+                  fontWeight: 'bold',
+                  color: '#FFFFFF',
+                  marginBottom: 4,
+                }}
+              >
+                {displayName}
+              </RNText>
+
+              {/* Email */}
+              <RNText
+                style={{
+                  fontSize: 14,
+                  color: '#FFFFFF',
+                  opacity: 0.9,
+                  marginBottom: sizes.s,
+                }}
+              >
+                {userEmail}
+              </RNText>
+
+              {/* Role Badge */}
+              <Block
+                color="rgba(255, 255, 255, 0.2)"
+                radius={20}
+                paddingHorizontal={sizes.m}
+                paddingVertical={sizes.xs}
+              >
+                <RNText
                   style={{
-                    height: IMAGE_VERTICAL_SIZE,
-                    width: IMAGE_VERTICAL_SIZE,
+                    fontSize: 13,
+                    color: '#FFFFFF',
+                    fontWeight: '600',
                   }}
-                />
-                <Image
-                  resizeMode="cover"
-                  source={assets?.photo3}
-                  style={{
-                    height: IMAGE_VERTICAL_SIZE,
-                    width: IMAGE_VERTICAL_SIZE,
-                  }}
-                />
+                >
+                  {userRole} • Member since {memberSince}
+                </RNText>
               </Block>
             </Block>
           </Block>
-        </Block>
+
+          {/* Stats Cards */}
+          <Block paddingHorizontal={horizontalPadding} marginTop={-sizes.xl}>
+            <Block
+              color={colors.white}
+              radius={20}
+              padding={sizes.m}
+              style={{
+                shadowColor: '#000',
+                shadowOpacity: 0.08,
+                shadowOffset: { width: 0, height: 2 },
+                shadowRadius: 12,
+                elevation: 4,
+              }}
+            >
+              <Block row justify="space-around">
+                {/* Courses Enrolled */}
+                <Block align="center" flex={1}>
+                  <RNText
+                    style={{
+                      fontSize: 24,
+                      fontWeight: 'bold',
+                      color: colors.primary,
+                    }}
+                  >
+                    {stats.coursesEnrolled}
+                  </RNText>
+                  <RNText
+                    style={{
+                      fontSize: 12,
+                      color: colors.gray,
+                      marginTop: 4,
+                    }}
+                  >
+                    Enrolled
+                  </RNText>
+                </Block>
+
+                {/* Divider */}
+                <View style={{ width: 1, backgroundColor: colors.card, marginHorizontal: sizes.s }} />
+
+                {/* Completed */}
+                <Block align="center" flex={1}>
+                  <RNText
+                    style={{
+                      fontSize: 24,
+                      fontWeight: 'bold',
+                      color: colors.primary,
+                    }}
+                  >
+                    {stats.coursesCompleted}
+                  </RNText>
+                  <RNText
+                    style={{
+                      fontSize: 12,
+                      color: colors.gray,
+                      marginTop: 4,
+                    }}
+                  >
+                    Completed
+                  </RNText>
+                </Block>
+
+                {/* Divider */}
+                <View style={{ width: 1, backgroundColor: colors.card, marginHorizontal: sizes.s }} />
+
+                {/* Hours */}
+                <Block align="center" flex={1}>
+                  <RNText
+                    style={{
+                      fontSize: 24,
+                      fontWeight: 'bold',
+                      color: colors.primary,
+                    }}
+                  >
+                    {stats.hoursLearned}h
+                  </RNText>
+                  <RNText
+                    style={{
+                      fontSize: 12,
+                      color: colors.gray,
+                      marginTop: 4,
+                    }}
+                  >
+                    Learning
+                  </RNText>
+                </Block>
+
+                {/* Divider */}
+                <View style={{ width: 1, backgroundColor: colors.card, marginHorizontal: sizes.s }} />
+
+                {/* Certificates */}
+                <Block align="center" flex={1}>
+                  <RNText
+                    style={{
+                      fontSize: 24,
+                      fontWeight: 'bold',
+                      color: colors.primary,
+                    }}
+                  >
+                    {stats.certificates}
+                  </RNText>
+                  <RNText
+                    style={{
+                      fontSize: 12,
+                      color: colors.gray,
+                      marginTop: 4,
+                    }}
+                  >
+                    Certificates
+                  </RNText>
+                </Block>
+              </Block>
+            </Block>
+          </Block>
+
+          {/* Menu Sections */}
+          {menuSections.map((section, sectionIndex) => (
+            <Block key={section.title} paddingHorizontal={horizontalPadding} marginTop={sizes.l}>
+              {/* Section Title */}
+              <RNText
+                style={{
+                  fontSize: 14,
+                  fontWeight: '600',
+                  color: colors.gray,
+                  textTransform: 'uppercase',
+                  letterSpacing: 0.5,
+                  marginBottom: sizes.sm,
+                }}
+              >
+                {section.title}
+              </RNText>
+
+              {/* Menu Items */}
+              <Block
+                color={colors.white}
+                radius={16}
+                style={{
+                  shadowColor: '#000',
+                  shadowOpacity: 0.06,
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowRadius: 8,
+                  elevation: 2,
+                }}
+              >
+                {section.items.map((item, itemIndex) => (
+                  <React.Fragment key={item.id}>
+                    <TouchableOpacity
+                      activeOpacity={0.7}
+                      onPress={() => handleMenuPress(item.id)}
+                    >
+                      <Block
+                        row
+                        align="center"
+                        justify="space-between"
+                        paddingHorizontal={sizes.sm}
+                        paddingVertical={sizes.sm}
+                        style={{ minHeight: 56 }}
+                      >
+                        {/* Left: Label with clean design */}
+                        <Block row align="center" flex={1}>
+                          <RNText
+                            style={{
+                              fontSize: 16,
+                              color: colors.text,
+                              fontWeight: '400',
+                              letterSpacing: 0.2,
+                            }}
+                          >
+                            {item.label}
+                          </RNText>
+                        </Block>
+
+                        {/* Right: Badge + Arrow */}
+                        <Block row align="center">
+                          {item.badge !== null && (
+                            <RNText
+                              style={{
+                                fontSize: 13,
+                                color: colors.gray,
+                                fontWeight: '400',
+                                marginRight: sizes.s,
+                              }}
+                            >
+                              {item.badge}
+                            </RNText>
+                          )}
+                          <RNText style={{ fontSize: 18, color: colors.gray, fontWeight: '300' }}>›</RNText>
+                        </Block>
+                      </Block>
+                    </TouchableOpacity>
+
+                    {/* Divider (not for last item) */}
+                    {itemIndex < section.items.length - 1 && (
+                      <View
+                        style={{
+                          height: 1,
+                          backgroundColor: colors.card,
+                          marginLeft: sizes.sm,
+                          marginRight: sizes.sm,
+                        }}
+                      />
+                    )}
+                  </React.Fragment>
+                ))}
+              </Block>
+            </Block>
+          ))}
+
+          {/* Logout Button */}
+          <Block paddingHorizontal={horizontalPadding} marginTop={sizes.l}>
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={handleLogout}
+              disabled={isLoggingOut}
+            >
+              <Block
+                color={colors.white}
+                radius={16}
+                padding={sizes.sm}
+                row
+                align="center"
+                justify="center"
+                style={{
+                  shadowColor: '#000',
+                  shadowOpacity: 0.06,
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowRadius: 8,
+                  elevation: 2,
+                  minHeight: 56,
+                  borderWidth: 1,
+                  borderColor: '#ef4444',
+                }}
+              >
+                <RNText
+                  style={{
+                    fontSize: 16,
+                    color: '#ef4444',
+                    fontWeight: '600',
+                  }}
+                >
+                  {isLoggingOut ? 'Logging out...' : 'Log Out'}
+                </RNText>
+              </Block>
+            </TouchableOpacity>
+          </Block>
+
+          {/* App Version */}
+          <Block align="center" marginTop={sizes.l}>
+            <RNText
+              style={{
+                fontSize: 12,
+                color: colors.gray,
+                opacity: 0.6,
+              }}
+            >
+              Intellact v1.0.0
+            </RNText>
+          </Block>
+        </ScrollView>
       </Block>
-    </Block>
+    </TouchableWithoutFeedback>
   );
 };
 

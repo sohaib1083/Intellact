@@ -25,18 +25,40 @@ export const TranslationProvider = ({
 
   const t = useCallback(
     (scope: string | string[], options?: object) => {
-      return i18n.translate(scope, {...options, locale});
+      try {
+        const result = i18n.translate(scope, {...options, locale});
+        // Return empty string if translation is null, undefined, or empty
+        return result || '';
+      } catch (error) {
+        console.warn(`Translation error for key "${scope}":`, error);
+        return typeof scope === 'string' ? scope : Array.isArray(scope) ? scope.join('.') : '';
+      }
     },
     [locale],
   );
 
   // get locale from storage
   const getLocale = useCallback(async () => {
-    // get preferance gtom storage
-    const localeJSON = await Storage.getItem('locale');
+    try {
+      // get preference from storage
+      const localeJSON = await Storage.getItem('locale');
 
-    // set Locale / compare if has updated
-    setLocale(localeJSON !== null ? localeJSON : Localization.locale);
+      // set Locale / compare if has updated
+      const deviceLocales = Localization.getLocales();
+      const deviceLocale = deviceLocales && deviceLocales.length > 0 
+        ? deviceLocales[0]?.languageCode || 'en' 
+        : 'en';
+      
+      const targetLocale = localeJSON !== null ? localeJSON : deviceLocale;
+      
+      // Ensure we have a valid locale
+      const validLocale = targetLocale && typeof targetLocale === 'string' ? targetLocale : 'en';
+      
+      setLocale(validLocale);
+    } catch (error) {
+      console.warn('Error getting locale:', error);
+      setLocale('en'); // fallback to English
+    }
   }, [setLocale]);
 
   useEffect(() => {
@@ -44,8 +66,12 @@ export const TranslationProvider = ({
   }, [getLocale]);
 
   useEffect(() => {
-    // save preferance to storage
-    Storage.setItem('locale', locale);
+    // save preference to storage
+    if (locale && typeof locale === 'string') {
+      Storage.setItem('locale', locale).catch(error => {
+        console.warn('Error saving locale to storage:', error);
+      });
+    }
   }, [locale]);
 
   const contextValue = {
