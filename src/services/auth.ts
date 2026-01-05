@@ -21,32 +21,34 @@ export interface UserProfile {
 // Register new user
 export const registerUser = async (email: string, password: string, name?: string, phone?: string): Promise<User> => {
   try {
-    console.log('🔐 Starting user registration for:', email);
-    console.log('🔥 Auth instance available:', auth ? 'Yes' : 'No');
+    console.log('Starting user registration for:', email);
+    console.log('Auth instance available:', auth ? 'Yes' : 'No');
     
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
     
-    console.log('✅ User created successfully:', user.uid);
+    console.log('User created successfully:', user.uid);
     
     // Create user profile in Firestore
-    const userProfile: UserProfile = {
+    const userProfile = {
       uid: user.uid,
       email: user.email || email,
+      displayName: name || '',
       name: name || '',
       phone: phone || '',
-      role: 'learner', // Default role
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      phoneNumber: phone || '',
+      role: 'learner',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
     
-    console.log('💾 Creating user profile in Firestore...');
+    console.log('Creating user profile in Firestore...');
     await setDoc(doc(db, 'users', user.uid), userProfile);
-    console.log('✅ User profile created successfully');
+    console.log('User profile created successfully');
     
     return user;
   } catch (error) {
-    console.error('❌ Registration error:', error);
+    console.error('Registration error:', error);
     throw error as AuthError;
   }
 };

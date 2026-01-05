@@ -1,6 +1,7 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {Platform, Dimensions, ScrollView, Modal as RNModal} from 'react-native';
+import {Platform, Dimensions, ScrollView, Modal as RNModal, TouchableOpacity} from 'react-native';
 import {useNavigation} from '@react-navigation/core';
+import Animated, { FadeInDown, FadeInUp, ZoomIn } from 'react-native-reanimated';
 
 import {useTheme, useAuth} from '../hooks/';
 import * as regex from '../constants/regex';
@@ -97,86 +98,89 @@ const Login = () => {
           }}>
           
           {/* Header section */}
-          <Block flex={0} align="center" marginBottom={sizes.xl}>
-            <Text h1 center white bold style={{
-              fontSize: isSmallScreen ? 28 : 32,
-              marginBottom: 8
-            }}>
-              Welcome Back
-            </Text>
-            <Text h5 center white semibold style={{
-              opacity: 0.9,
-              fontSize: isSmallScreen ? 16 : 18,
-            }}>
-              Sign in to continue your learning
-            </Text>
-          </Block>
+          <Animated.View entering={FadeInDown.duration(600)}>
+            <Block flex={0} align="center" marginBottom={sizes.xl}>
+              <Text h1 center white bold style={{
+                fontSize: isSmallScreen ? 28 : 32,
+                marginBottom: 8
+              }}>
+                Welcome Back
+              </Text>
+              <Text h5 center white semibold style={{
+                opacity: 0.9,
+                fontSize: isSmallScreen ? 16 : 18,
+              }}>
+                Sign in to continue your learning
+              </Text>
+            </Block>
+          </Animated.View>
 
           {/* Login form */}
-          <Block flex={1} justify="center">
-            <Block
-              color={colors.card}
-              radius={20}
-              padding={sizes.padding}
-              shadow={!isAndroid}
-              style={{
-                elevation: 12,
-                shadowColor: '#000',
-                shadowOffset: {width: 0, height: 6},
-                shadowOpacity: 0.15,
-                shadowRadius: 12,
-              }}>
-              
-              <Text h4 semibold marginBottom={sizes.s} style={{
-                textAlign: 'center',
-                color: colors.text
-              }}>
-                Sign In
-              </Text>
-              
-              <Input
-                autoComplete="email"
-                autoCapitalize="none"
-                marginBottom={sizes.l}
-                label="Email Address"
-                keyboardType="email-address"
-                placeholder="Enter your email"
-                success={Boolean(login.email && isValid.email)}
-                danger={Boolean(login.email && !isValid.email)}
-                onChangeText={(value) => handleChange({email: value})}
-              />
-              
-              <Input
-                secureTextEntry
-                autoComplete="password"
-                marginBottom={sizes.xl}
-                label="Password"
-                placeholder="Enter your password"
-                onChangeText={(value) => handleChange({password: value})}
-                success={Boolean(login.password && isValid.password)}
-                danger={Boolean(login.password && !isValid.password)}
-              />
-              
-              <Button
-                onPress={handleLogin}
-                disabled={loading}
-                marginBottom={sizes.s}
-                gradient={gradients.primary}
+          <Animated.View entering={FadeInUp.delay(200).duration(600).springify()}>
+            <Block flex={1} justify="center">
+              <Block
+                color={colors.card}
+                radius={20}
+                padding={sizes.padding}
                 shadow={!isAndroid}
                 style={{
-                  minHeight: isSmallScreen ? 50 : 54,
+                  elevation: 12,
+                  shadowColor: '#000',
+                  shadowOffset: {width: 0, height: 6},
+                  shadowOpacity: 0.15,
+                  shadowRadius: 12,
                 }}>
-                <Text bold white transform="uppercase" style={{
-                  fontSize: isSmallScreen ? 15 : 16,
-                  letterSpacing: 0.8
+                
+                <Text h4 semibold marginBottom={sizes.s} style={{
+                  textAlign: 'center',
+                  color: colors.text
                 }}>
-                  {loading ? 'Signing In...' : 'Sign In'}
+                  Sign In
                 </Text>
-              </Button>
-              
-              <Button
-                white
-                onPress={() => navigation.navigate('Signup' as never)}
+                
+                <Input
+                  autoComplete="email"
+                  autoCapitalize="none"
+                  marginBottom={sizes.l}
+                  label="Email Address"
+                  keyboardType="email-address"
+                  placeholder="Enter your email"
+                  success={Boolean(login.email && isValid.email)}
+                  danger={Boolean(login.email && !isValid.email)}
+                  onChangeText={(value) => handleChange({email: value})}
+                />
+                
+                <Input
+                  secureTextEntry
+                  autoComplete="password"
+                  marginBottom={sizes.xl}
+                  label="Password"
+                  placeholder="Enter your password"
+                  onChangeText={(value) => handleChange({password: value})}
+                  success={Boolean(login.password && isValid.password)}
+                  danger={Boolean(login.password && !isValid.password)}
+                />
+                
+                <Button
+                  onPress={handleLogin}
+                  disabled={loading}
+                  marginBottom={sizes.s}
+                  gradient={gradients.primary}
+                  shadow={!isAndroid}
+                  style={{
+                    minHeight: isSmallScreen ? 50 : 54,
+                  }}>
+                  <Text bold white transform="uppercase" style={{
+                    fontSize: isSmallScreen ? 15 : 16,
+                    letterSpacing: 0.8
+                  }}>
+                    {loading ? 'Signing In...' : 'Sign In'}
+                  </Text>
+                </Button>
+                
+                <Button
+                  white
+                  onPress={() => navigation.navigate('Signup' as never)}
                 style={{
                   // minHeight: isSmallScreen ? 50 : 54,
                   borderWidth: 2,
@@ -194,17 +198,20 @@ const Login = () => {
               </Button>
             </Block>
           </Block>
+          </Animated.View>
 
           {/* Footer */}
-          <Block flex={0} align="center" marginTop={sizes.l}>
-            <Text center style={{
-              opacity: 0.7,
-              fontSize: 12,
-              color: colors.white
-            }}>
-              Secure login powered by Firebase
-            </Text>
-          </Block>
+          <Animated.View entering={FadeInUp.delay(400).duration(500)}>
+            <Block flex={0} align="center" marginTop={sizes.l}>
+              <Text center style={{
+                opacity: 0.7,
+                fontSize: 12,
+                color: colors.white
+              }}>
+                Secure login powered by Firebase
+              </Text>
+            </Block>
+          </Animated.View>
         </ScrollView>
       </Block>
       

@@ -11,21 +11,31 @@ import {
   Dimensions,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/core';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Block } from '../components/';
 import { useTheme, useAuth } from '../hooks/';
 import { updateUserProfile } from '../services/auth';
 
-const { height } = Dimensions.get('window');
+const { height, width } = Dimensions.get('window');
 const isSmallScreen = height < 700;
+const isVerySmallScreen = height < 600;
 
 const EditProfile = () => {
   const navigation = useNavigation();
   const { user, userProfile, refreshUserProfile } = useAuth();
   const { colors, sizes } = useTheme();
+  const insets = useSafeAreaInsets();
   const [isSaving, setIsSaving] = useState(false);
 
-  const horizontalPadding = isSmallScreen ? sizes.sm : sizes.padding;
+  // Responsive sizing
+  const horizontalPadding = isVerySmallScreen ? sizes.sm : isSmallScreen ? sizes.m : sizes.padding;
+  const avatarSize = isVerySmallScreen ? 70 : isSmallScreen ? 80 : 90;
+  const avatarFontSize = isVerySmallScreen ? 32 : isSmallScreen ? 38 : 42;
+  const titleSize = isVerySmallScreen ? 16 : 18;
+  const labelSize = isVerySmallScreen ? 13 : 14;
+  const inputSize = isVerySmallScreen ? 15 : 16;
+  const inputHeight = isVerySmallScreen ? 44 : 48;
 
   // Form state
   const [formData, setFormData] = useState({
@@ -104,7 +114,7 @@ const EditProfile = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <Block safe flex={1} color={colors.light}>
+      <Block flex={1} color={colors.light}>
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: sizes.xxl }}
@@ -113,9 +123,16 @@ const EditProfile = () => {
           {/* Header */}
           <Block
             paddingHorizontal={horizontalPadding}
-            paddingTop={sizes.l}
-            paddingBottom={sizes.m}
-            color={colors.card}
+            paddingBottom={isVerySmallScreen ? sizes.s : sizes.m}
+            color={colors.white}
+            style={{
+              paddingTop: insets.top + (isVerySmallScreen ? sizes.sm : sizes.m),
+              shadowColor: '#000',
+              shadowOpacity: 0.05,
+              shadowOffset: { width: 0, height: 2 },
+              shadowRadius: 8,
+              elevation: 2,
+            }}
           >
             <Block row align="center" justify="space-between">
               <TouchableOpacity
@@ -124,9 +141,9 @@ const EditProfile = () => {
               >
                 <RNText
                   style={{
-                    fontSize: 16,
+                    fontSize: isVerySmallScreen ? 15 : 16,
                     color: colors.primary,
-                    fontWeight: '400',
+                    fontWeight: '500',
                   }}
                 >
                   Cancel
@@ -135,9 +152,10 @@ const EditProfile = () => {
 
               <RNText
                 style={{
-                  fontSize: 18,
-                  fontWeight: '600',
+                  fontSize: titleSize,
+                  fontWeight: '700',
                   color: colors.text,
+                  letterSpacing: 0.2,
                 }}
               >
                 Edit Profile
@@ -150,9 +168,9 @@ const EditProfile = () => {
               >
                 <RNText
                   style={{
-                    fontSize: 16,
+                    fontSize: isVerySmallScreen ? 15 : 16,
                     color: isSaving ? colors.gray : colors.primary,
-                    fontWeight: '600',
+                    fontWeight: '700',
                   }}
                 >
                   {isSaving ? 'Saving...' : 'Save'}
@@ -162,23 +180,23 @@ const EditProfile = () => {
           </Block>
 
           {/* Avatar Section */}
-          <Block align="center" paddingVertical={sizes.l}>
+          <Block align="center" paddingVertical={isVerySmallScreen ? sizes.m : sizes.l}>
             <Block
               style={{
-                width: 100,
-                height: 100,
-                borderRadius: 50,
+                width: avatarSize,
+                height: avatarSize,
+                borderRadius: avatarSize / 2,
                 backgroundColor: colors.primary,
                 justifyContent: 'center',
                 alignItems: 'center',
                 shadowColor: '#000',
-                shadowOpacity: 0.1,
-                shadowOffset: { width: 0, height: 2 },
-                shadowRadius: 8,
-                elevation: 4,
+                shadowOpacity: 0.12,
+                shadowOffset: { width: 0, height: 3 },
+                shadowRadius: 10,
+                elevation: 5,
               }}
             >
-              <RNText style={{ fontSize: 48, color: colors.white }}>
+              <RNText style={{ fontSize: avatarFontSize, color: colors.white, fontWeight: '600' }}>
                 {formData.name.charAt(0).toUpperCase() || 'U'}
               </RNText>
             </Block>
@@ -198,13 +216,14 @@ const EditProfile = () => {
           {/* Form Section */}
           <Block paddingHorizontal={horizontalPadding}>
             {/* Name Field */}
-            <Block marginBottom={sizes.m}>
+            <Block marginBottom={isVerySmallScreen ? sizes.sm : sizes.m}>
               <RNText
                 style={{
-                  fontSize: 14,
-                  fontWeight: '500',
+                  fontSize: labelSize,
+                  fontWeight: '600',
                   color: colors.text,
                   marginBottom: sizes.xs,
+                  letterSpacing: 0.2,
                 }}
               >
                 Full Name *
@@ -213,8 +232,13 @@ const EditProfile = () => {
                 color={colors.white}
                 radius={12}
                 style={{
-                  borderWidth: 1,
+                  borderWidth: 1.5,
                   borderColor: errors.name ? '#ef4444' : colors.card,
+                  shadowColor: errors.name ? '#ef4444' : '#000',
+                  shadowOpacity: errors.name ? 0.1 : 0.03,
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowRadius: 4,
+                  elevation: 1,
                 }}
               >
                 <TextInput
@@ -226,17 +250,17 @@ const EditProfile = () => {
                   placeholder="Enter your full name"
                   placeholderTextColor={colors.gray}
                   style={{
-                    fontSize: 16,
+                    fontSize: inputSize,
                     color: colors.text,
-                    padding: sizes.sm,
-                    minHeight: 48,
+                    padding: isVerySmallScreen ? sizes.s : sizes.sm,
+                    minHeight: inputHeight,
                   }}
                 />
               </Block>
               {errors.name ? (
                 <RNText
                   style={{
-                    fontSize: 12,
+                    fontSize: isVerySmallScreen ? 11 : 12,
                     color: '#ef4444',
                     marginTop: 4,
                   }}
@@ -247,13 +271,14 @@ const EditProfile = () => {
             </Block>
 
             {/* Email Field (Read-only) */}
-            <Block marginBottom={sizes.m}>
+            <Block marginBottom={isVerySmallScreen ? sizes.sm : sizes.m}>
               <RNText
                 style={{
-                  fontSize: 14,
-                  fontWeight: '500',
+                  fontSize: labelSize,
+                  fontWeight: '600',
                   color: colors.text,
                   marginBottom: sizes.xs,
+                  letterSpacing: 0.2,
                 }}
               >
                 Email
@@ -262,7 +287,7 @@ const EditProfile = () => {
                 color={colors.card}
                 radius={12}
                 style={{
-                  borderWidth: 1,
+                  borderWidth: 1.5,
                   borderColor: colors.card,
                 }}
               >
@@ -270,16 +295,16 @@ const EditProfile = () => {
                   value={user?.email || ''}
                   editable={false}
                   style={{
-                    fontSize: 16,
+                    fontSize: inputSize,
                     color: colors.gray,
-                    padding: sizes.sm,
-                    minHeight: 48,
+                    padding: isVerySmallScreen ? sizes.s : sizes.sm,
+                    minHeight: inputHeight,
                   }}
                 />
               </Block>
               <RNText
                 style={{
-                  fontSize: 12,
+                  fontSize: isVerySmallScreen ? 11 : 12,
                   color: colors.gray,
                   marginTop: 4,
                 }}
@@ -289,13 +314,14 @@ const EditProfile = () => {
             </Block>
 
             {/* Phone Field */}
-            <Block marginBottom={sizes.m}>
+            <Block marginBottom={isVerySmallScreen ? sizes.sm : sizes.m}>
               <RNText
                 style={{
-                  fontSize: 14,
-                  fontWeight: '500',
+                  fontSize: labelSize,
+                  fontWeight: '600',
                   color: colors.text,
                   marginBottom: sizes.xs,
+                  letterSpacing: 0.2,
                 }}
               >
                 Phone Number
@@ -304,8 +330,16 @@ const EditProfile = () => {
                 color={colors.white}
                 radius={12}
                 style={{
-                  borderWidth: 1,
+                  borderWidth: 1.5,
                   borderColor: errors.phone ? '#ef4444' : colors.card,
+                  shadowColor: errors.phone ? '#ef4444' : colors.primary,
+                  shadowOffset: {
+                    width: 0,
+                    height: 2,
+                  },
+                  shadowOpacity: errors.phone ? 0.15 : 0.03,
+                  shadowRadius: 4,
+                  elevation: errors.phone ? 3 : 1,
                 }}
               >
                 <TextInput
@@ -318,17 +352,17 @@ const EditProfile = () => {
                   placeholderTextColor={colors.gray}
                   keyboardType="phone-pad"
                   style={{
-                    fontSize: 16,
+                    fontSize: inputSize,
                     color: colors.text,
-                    padding: sizes.sm,
-                    minHeight: 48,
+                    padding: isVerySmallScreen ? sizes.s : sizes.sm,
+                    minHeight: inputHeight,
                   }}
                 />
               </Block>
               {errors.phone ? (
                 <RNText
                   style={{
-                    fontSize: 12,
+                    fontSize: isVerySmallScreen ? 11 : 12,
                     color: '#ef4444',
                     marginTop: 4,
                   }}
@@ -339,13 +373,14 @@ const EditProfile = () => {
             </Block>
 
             {/* Role Display */}
-            <Block marginBottom={sizes.m}>
+            <Block marginBottom={isVerySmallScreen ? sizes.sm : sizes.m}>
               <RNText
                 style={{
-                  fontSize: 14,
-                  fontWeight: '500',
+                  fontSize: labelSize,
+                  fontWeight: '600',
                   color: colors.text,
                   marginBottom: sizes.xs,
+                  letterSpacing: 0.2,
                 }}
               >
                 Role
@@ -353,17 +388,17 @@ const EditProfile = () => {
               <Block
                 color={colors.card}
                 radius={12}
-                padding={sizes.sm}
+                padding={isVerySmallScreen ? sizes.s : sizes.sm}
                 style={{
-                  borderWidth: 1,
+                  borderWidth: 1.5,
                   borderColor: colors.card,
-                  minHeight: 48,
+                  minHeight: inputHeight,
                   justifyContent: 'center',
                 }}
               >
                 <RNText
                   style={{
-                    fontSize: 16,
+                    fontSize: inputSize,
                     color: colors.gray,
                   }}
                 >
@@ -372,7 +407,7 @@ const EditProfile = () => {
               </Block>
               <RNText
                 style={{
-                  fontSize: 12,
+                  fontSize: isVerySmallScreen ? 11 : 12,
                   color: colors.gray,
                   marginTop: 4,
                 }}
@@ -392,19 +427,28 @@ const EditProfile = () => {
               <Block
                 color={colors.primary}
                 radius={12}
-                padding={sizes.sm}
+                padding={isVerySmallScreen ? sizes.s : sizes.sm}
                 align="center"
                 justify="center"
                 style={{
-                  minHeight: 50,
+                  minHeight: isVerySmallScreen ? 48 : isSmallScreen ? 50 : 52,
                   opacity: isSaving ? 0.6 : 1,
+                  shadowColor: colors.primary,
+                  shadowOffset: {
+                    width: 0,
+                    height: 3,
+                  },
+                  shadowOpacity: 0.2,
+                  shadowRadius: 6,
+                  elevation: 4,
                 }}
               >
                 <RNText
                   style={{
-                    fontSize: 16,
+                    fontSize: isVerySmallScreen ? 14 : isSmallScreen ? 15 : 16,
                     color: '#FFFFFF',
-                    fontWeight: '600',
+                    fontWeight: '700',
+                    letterSpacing: 0.3,
                   }}
                 >
                   {isSaving ? 'Saving Changes...' : 'Save Changes'}
@@ -420,20 +464,20 @@ const EditProfile = () => {
               <Block
                 color={colors.white}
                 radius={12}
-                padding={sizes.sm}
+                padding={isVerySmallScreen ? sizes.s : sizes.sm}
                 align="center"
                 justify="center"
                 style={{
-                  minHeight: 50,
-                  borderWidth: 1,
+                  minHeight: isVerySmallScreen ? 48 : isSmallScreen ? 50 : 52,
+                  borderWidth: 1.5,
                   borderColor: colors.card,
                 }}
               >
                 <RNText
                   style={{
-                    fontSize: 16,
+                    fontSize: isVerySmallScreen ? 14 : isSmallScreen ? 15 : 16,
                     color: colors.text,
-                    fontWeight: '500',
+                    fontWeight: '600',
                   }}
                 >
                   Cancel

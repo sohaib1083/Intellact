@@ -1,6 +1,7 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {Platform, Dimensions, ScrollView, Modal as RNModal} from 'react-native';
 import {useNavigation} from '@react-navigation/core';
+import Animated, { FadeInDown, FadeInUp, ZoomIn } from 'react-native-reanimated';
 
 import {useTheme, useAuth} from '../hooks/';
 import * as regex from '../constants/regex';
@@ -112,71 +113,74 @@ const Signup = () => {
           }}>
           
           {/* Header section */}
-          <Block flex={0} align="center" marginBottom={sizes.l}>
-            <Text h1 center white bold style={{
-              fontSize: isSmallScreen ? 26 : 30,
-              marginBottom: 8
-            }}>
-              Join Intellact
-            </Text>
-            <Text h5 center white semibold style={{
-              opacity: 0.9,
-              fontSize: isSmallScreen ? 15 : 17,
-            }}>
-              Create your account to start learning
-            </Text>
-          </Block>
+          <Animated.View entering={FadeInDown.duration(600)}>
+            <Block flex={0} align="center" marginBottom={sizes.l}>
+              <Text h1 center white bold style={{
+                fontSize: isSmallScreen ? 26 : 30,
+                marginBottom: 8
+              }}>
+                Join Intellact
+              </Text>
+              <Text h5 center white semibold style={{
+                opacity: 0.9,
+                fontSize: isSmallScreen ? 15 : 17,
+              }}>
+                Create your account to start learning
+              </Text>
+            </Block>
+          </Animated.View>
 
           {/* Signup form */}
-          <Block flex={1}>
-            <Block
-              color={colors.card}
-              radius={20}
-              padding={sizes.padding}
-              shadow={!isAndroid}
-              style={{
-                elevation: 12,
-                shadowColor: '#000',
-                shadowOffset: {width: 0, height: 6},
-                shadowOpacity: 0.15,
-                shadowRadius: 12,
-              }}>
-              
-              <Text h4 semibold marginBottom={sizes.l} style={{
-                textAlign: 'center',
-                color: colors.text
-              }}>
-                Create Account
-              </Text>
-              
-              <Input
-                autoCapitalize="words"
-                marginBottom={sizes.m}
-                label="Full Name"
-                placeholder="Enter your full name"
-                success={Boolean(registration.name && isValid.name)}
-                danger={Boolean(registration.name && !isValid.name)}
-                onChangeText={(value) => handleChange({name: value})}
-              />
+          <Animated.View entering={FadeInUp.delay(200).duration(600).springify()}>
+            <Block flex={1}>
+              <Block
+                color={colors.card}
+                radius={20}
+                padding={sizes.padding}
+                shadow={!isAndroid}
+                style={{
+                  elevation: 12,
+                  shadowColor: '#000',
+                  shadowOffset: {width: 0, height: 6},
+                  shadowOpacity: 0.15,
+                  shadowRadius: 12,
+                }}>
+                
+                <Text h4 semibold marginBottom={sizes.l} style={{
+                  textAlign: 'center',
+                  color: colors.text
+                }}>
+                  Create Account
+                </Text>
+                
+                <Input
+                  autoCapitalize="words"
+                  marginBottom={sizes.m}
+                  label="Full Name"
+                  placeholder="Enter your full name"
+                  success={Boolean(registration.name && isValid.name)}
+                  danger={Boolean(registration.name && !isValid.name)}
+                  onChangeText={(value) => handleChange({name: value})}
+                />
 
-              <Input
-                autoComplete="tel"
-                marginBottom={sizes.m}
-                label="Phone Number"
-                keyboardType="phone-pad"
-                placeholder="Enter your phone number"
-                success={Boolean(registration.phone && isValid.phone)}
-                danger={Boolean(registration.phone && !isValid.phone)}
-                onChangeText={(value) => handleChange({phone: value})}
-              />
-              
-              <Input
-                autoComplete="email"
-                autoCapitalize="none"
-                marginBottom={sizes.m}
-                label="Email Address"
-                keyboardType="email-address"
-                placeholder="Enter your email"
+                <Input
+                  autoComplete="tel"
+                  marginBottom={sizes.m}
+                  label="Phone Number"
+                  keyboardType="phone-pad"
+                  placeholder="Enter your phone number"
+                  success={Boolean(registration.phone && isValid.phone)}
+                  danger={Boolean(registration.phone && !isValid.phone)}
+                  onChangeText={(value) => handleChange({phone: value})}
+                />
+                
+                <Input
+                  autoComplete="email"
+                  autoCapitalize="none"
+                  marginBottom={sizes.m}
+                  label="Email Address"
+                  keyboardType="email-address"
+                  placeholder="Enter your email"
                 success={Boolean(registration.email && isValid.email)}
                 danger={Boolean(registration.email && !isValid.email)}
                 onChangeText={(value) => handleChange({email: value})}
@@ -258,17 +262,20 @@ const Signup = () => {
               </Button>
             </Block>
           </Block>
+          </Animated.View>
 
           {/* Footer */}
-          <Block flex={0} align="center" marginTop={sizes.l}>
-            <Text center style={{
-              opacity: 0.7,
-              fontSize: 12,
-              color: colors.white
-            }}>
-              Join thousands of learners worldwide
-            </Text>
-          </Block>
+          <Animated.View entering={FadeInUp.delay(400).duration(500)}>
+            <Block flex={0} align="center" marginTop={sizes.l}>
+              <Text center style={{
+                opacity: 0.7,
+                fontSize: 12,
+                color: colors.white
+              }}>
+                Join thousands of learners worldwide
+              </Text>
+            </Block>
+          </Animated.View>
         </ScrollView>
       </Block>
       
