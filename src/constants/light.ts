@@ -12,20 +12,20 @@ export const COLORS: ThemeColors = {
   // default text color
   text: '#252F40',
 
-  // base colors
-  /** UI color for #primary */
-  primary: '#2D3561', // Professional deep navy blue
+  // base colors - Intellact Brand Colors
+  /** UI color for #primary - Intellact Brand Greyish Blue */
+  primary: '#4A6572',
   /** UI color for #secondary */
-  secondary: '#5B6B9E', // Complementary slate blue
+  secondary: '#627594',
   /** UI color for #tertiary */
-  tertiary: '#4A90E2', // Vibrant accent blue
+  tertiary: '#344955',
 
   // non-colors
   black: '#252F40',
   white: '#FFFFFF',
 
-  dark: '#1A2037', // Darker navy for depth
-  light: '#E9ECEF',
+  dark: '#1A1F33',
+  light: '#F4F5F7',
 
   // gray variations
   /** UI color for #gray */
@@ -43,22 +43,22 @@ export const COLORS: ThemeColors = {
 
   /** UI colors for navigation & card */
   card: '#FFFFFF',
-  background: '#E9ECEF',
+  background: '#F8F9FA',
 
   /** UI color for shadowColor */
   shadow: '#000000',
   overlay: 'rgba(0,0,0,0.3)',
 
   /** UI color for input borderColor on focus */
-  focus: '#4A90E2', // Bright blue focus
+  focus: '#4A6572',
   input: '#252F40',
 
   /** UI color for switch checked/active color */
-  switchOn: '#2D3561', // Primary navy
+  switchOn: '#4A6572',
   switchOff: '#E9ECEF',
 
   /** UI color for checkbox icon checked/active color */
-  checkbox: ['#2D3561', '#1A2037'], // Navy gradient
+  checkbox: ['#4A6572', '#344955'],
   checkboxIcon: '#FFFFFF',
 
   /** social colors */
@@ -67,28 +67,28 @@ export const COLORS: ThemeColors = {
   dribbble: '#EA4C89',
 
   /** icon tint color */
-  icon: '#5B6B9E', // Secondary blue
+  icon: '#4A6572',
 
   /** blur tint color */
   blurTint: 'light',
 
   /** product link color */
-  link: '#4A90E2', // Accent blue
+  link: '#4A6572',
 };
 
 export const GRADIENTS: ThemeGradients = {
-  primary: ['#2D3561', '#1A2037'], // Professional navy gradient
-  secondary: ['#5B6B9E', '#4A5A8E'], // Slate blue gradient
-  info: ['#4A90E2', '#357ABD'], // Bright blue gradient
+  primary: ['#4A6572', '#344955'], // Intellact brand gradient - greyish blue
+  secondary: ['#627594', '#8392AB'],
+  info: ['#21D4FD', '#17C1E8'],
   success: ['#98EC2D', '#17AD37'],
   warning: ['#FBCF33', '#F53939'],
   danger: ['#FF667C', '#EA0606'],
 
   light: ['#EBEFF4', '#CED4DA'],
-  dark: ['#2D3561', '#1A2037'], // Navy gradient
+  dark: ['#3A416F', '#141727'],
 
   white: [String(COLORS.white), '#EBEFF4'],
-  black: [String(COLORS.black), '#1A2037'],
+  black: [String(COLORS.black), '#141727'],
 
   divider: ['rgba(255,255,255,0.3)', 'rgba(102, 116, 142, 0.6)'],
   menu: [

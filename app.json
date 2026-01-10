@@ -3,14 +3,14 @@
     "name": "Intellact",
     "slug": "intellact",
     "description": "Intellact - Your Intelligent Assistant",
-    "primaryColor": "#CB0C9F",
+    "primaryColor": "#4A6572",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "cover",
-      "backgroundColor": "#CB0C9F"
+      "backgroundColor": "#4A6572"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -25,14 +25,20 @@
       "package": "com.nexuslabs.intellact",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#CB0C9F"
-      }
+        "backgroundColor": "#4A6572"
+      },
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-localization"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "9448af32-d97d-49b9-8fb3-578bfd9e53ea"
+      }
+    }
   }
 }

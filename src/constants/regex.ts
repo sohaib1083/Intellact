@@ -20,7 +20,7 @@ export const phone: RegExp = /^[\+]?[1-9][\d]{9,15}$/;
  * (?=.*\d): at least one digit
  * (?=.*[a-z]): at least one lower case
  * (?=.*[A-Z]): at least one uppercase case
- * [0-9a-zA-Z]{6,}: at least 6 from the mentioned characters
+ * minimum 6 characters, allows special characters
  */
 export const password: RegExp =
-  /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{6,}$/;
+  /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}$/;

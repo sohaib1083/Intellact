@@ -52,7 +52,10 @@ export interface User {
   email: string;
   name?: string;
   phone?: string;
+  avatar?: string;
   role: 'learner' | 'admin';
+  interests?: string[];
+  enrolledCourses?: string[];
   createdAt: Date | Timestamp;
   updatedAt?: Date | Timestamp;
 }

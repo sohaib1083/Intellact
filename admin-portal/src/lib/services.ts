@@ -269,12 +269,22 @@ export async function getAllUsers(): Promise<User[]> {
     users.push({
       id: doc.id,
       email: data.email || '',
-      name: data.name || '',
-      phone: data.phone || '',
+      name: data.name || data.displayName || '',
+      phone: data.phone || data.phoneNumber || '',
+      avatar: data.avatar || data.photoURL || '',
       role: data.role || 'learner',
+      interests: Array.isArray(data.interests) ? data.interests : [],
+      enrolledCourses: Array.isArray(data.enrolledCourses) ? data.enrolledCourses : [],
       createdAt: data.createdAt || new Date(),
       updatedAt: data.updatedAt,
     });
+  });
+  
+  // Sort by createdAt descending (newest first)
+  users.sort((a, b) => {
+    const dateA = a.createdAt instanceof Timestamp ? a.createdAt.toDate() : new Date(a.createdAt as Date);
+    const dateB = b.createdAt instanceof Timestamp ? b.createdAt.toDate() : new Date(b.createdAt as Date);
+    return dateB.getTime() - dateA.getTime();
   });
   
   return users;
