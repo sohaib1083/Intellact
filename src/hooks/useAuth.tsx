@@ -42,11 +42,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      console.log('Auth state changed:', user ? 'User logged in' : 'User logged out');
       setUser(user);
       
       if (user) {
         try {
+          console.log('Fetching user profile for UID:', user.uid);
           const profile = await getUserProfile(user.uid);
+          console.log('User profile loaded successfully');
           setUserProfile(profile);
         } catch (error) {
           console.error('Error getting user profile:', error);

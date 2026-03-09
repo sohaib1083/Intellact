@@ -1,6 +1,6 @@
-import { 
-  createUserWithEmailAndPassword, 
-  signInWithEmailAndPassword, 
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
   signOut as firebaseSignOut,
   User,
   AuthError
@@ -23,12 +23,12 @@ export const registerUser = async (email: string, password: string, name?: strin
   try {
     console.log('Starting user registration for:', email);
     console.log('Auth instance available:', auth ? 'Yes' : 'No');
-    
+
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
-    
+
     console.log('User created successfully:', user.uid);
-    
+
     // Create user profile in Firestore
     const userProfile = {
       uid: user.uid,
@@ -41,14 +41,21 @@ export const registerUser = async (email: string, password: string, name?: strin
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    
-    console.log('Creating user profile in Firestore...');
+
+    console.log('🔍 Creating user profile in Firestore...');
     await setDoc(doc(db, 'users', user.uid), userProfile);
-    console.log('User profile created successfully');
-    
+    console.log('✅ User profile created successfully in Firestore');
+
     return user;
   } catch (error) {
-    console.error('Registration error:', error);
+    console.error('❌ Registration error:', error);
+    if (error instanceof Error) {
+      console.error('Error details:', error.message);
+      if (error.message.includes('permissions')) {
+        console.error('📋 This is a Firestore permissions error.');
+        console.error('📋 Please update your Firestore rules to allow user creation.');
+      }
+    }
     throw error as AuthError;
   }
 };
@@ -75,16 +82,24 @@ export const signOut = async (): Promise<void> => {
 // Get user profile
 export const getUserProfile = async (uid: string): Promise<UserProfile | null> => {
   try {
+    console.log('🔍 Attempting to fetch user profile for UID:', uid);
     const docRef = doc(db, 'users', uid);
     const docSnap = await getDoc(docRef);
-    
+
     if (docSnap.exists()) {
+      console.log('✅ User profile loaded successfully');
       return docSnap.data() as UserProfile;
     } else {
+      console.log('⚠️ User profile not found in Firestore');
       return null;
     }
   } catch (error) {
-    console.error('Error getting user profile:', error);
+    console.error('❌ Error getting user profile:', error);
+    if (error instanceof Error) {
+      console.error('Error details:', error.message);
+      console.error('📋 This is likely a Firestore permissions issue.');
+      console.error('📋 Make sure your Firestore rules allow reading user documents.');
+    }
     throw error;
   }
 };

@@ -1,12 +1,12 @@
-import { 
-  collection, 
-  doc, 
-  setDoc, 
-  getDoc, 
-  getDocs, 
-  query, 
-  where, 
-  orderBy, 
+import {
+  collection,
+  doc,
+  setDoc,
+  getDoc,
+  getDocs,
+  query,
+  where,
+  orderBy,
   limit,
   updateDoc,
   deleteDoc,
@@ -123,32 +123,38 @@ const parseCourseData = (id: string, data: any): Course => {
  */
 export const fetchAllCourses = async (): Promise<Course[]> => {
   try {
+    console.log('🔍 Attempting to fetch courses...');
     const coursesRef = collection(db, COURSES_COLLECTION);
     // Simple query without orderBy to avoid composite index requirement
     const q = query(
-      coursesRef, 
+      coursesRef,
       where('isPublished', '==', true)
     );
-    
+
     const querySnapshot = await getDocs(q);
     const courses: Course[] = [];
-    
+
     querySnapshot.forEach((doc) => {
       courses.push(parseCourseData(doc.id, doc.data()));
     });
-    
+
     // Sort client-side by createdAt descending
     courses.sort((a, b) => {
       const dateA = a.createdAt instanceof Timestamp ? a.createdAt.toDate() : new Date(a.createdAt);
       const dateB = b.createdAt instanceof Timestamp ? b.createdAt.toDate() : new Date(b.createdAt);
       return dateB.getTime() - dateA.getTime();
     });
-    
-    console.log('Fetched ' + courses.length + ' courses');
+
+    console.log('✅ Fetched ' + courses.length + ' courses successfully');
     return courses;
   } catch (error) {
-    console.error('Error fetching courses:', error);
-    throw error;
+    console.error('❌ Error fetching courses:', error);
+    if (error instanceof Error) {
+      console.error('Error details:', error.message);
+    }
+    // Return empty array instead of throwing to prevent app crash
+    console.warn('Returning empty courses array due to error');
+    return [];
   }
 };
 
@@ -165,21 +171,21 @@ export const fetchCoursesByCategory = async (category: string): Promise<Course[]
       where('isPublished', '==', true),
       where('category', '==', category)
     );
-    
+
     const querySnapshot = await getDocs(q);
     const courses: Course[] = [];
-    
+
     querySnapshot.forEach((doc) => {
       courses.push(parseCourseData(doc.id, doc.data()));
     });
-    
+
     // Sort client-side by createdAt descending
     courses.sort((a, b) => {
       const dateA = a.createdAt instanceof Timestamp ? a.createdAt.toDate() : new Date(a.createdAt);
       const dateB = b.createdAt instanceof Timestamp ? b.createdAt.toDate() : new Date(b.createdAt);
       return dateB.getTime() - dateA.getTime();
     });
-    
+
     console.log('Fetched ' + courses.length + ' courses in category: ' + category);
     return courses;
   } catch (error) {
@@ -201,17 +207,17 @@ export const fetchFeaturedCourses = async (limitCount: number = 10): Promise<Cou
       where('isPublished', '==', true),
       where('isFeatured', '==', true)
     );
-    
+
     const querySnapshot = await getDocs(q);
     const courses: Course[] = [];
-    
+
     querySnapshot.forEach((doc) => {
       courses.push(parseCourseData(doc.id, doc.data()));
     });
-    
+
     // Sort client-side by rating descending and limit
     courses.sort((a, b) => b.rating - a.rating);
-    
+
     console.log('Fetched ' + courses.length + ' featured courses');
     return courses.slice(0, limitCount);
   } catch (error) {
@@ -227,12 +233,12 @@ export const fetchCourseById = async (courseId: string): Promise<Course | null> 
   try {
     const courseRef = doc(db, COURSES_COLLECTION, courseId);
     const courseSnap = await getDoc(courseRef);
-    
+
     if (courseSnap.exists()) {
       console.log(`Fetched course: ${courseId}`);
       return parseCourseData(courseSnap.id, courseSnap.data());
     }
-    
+
     console.log(`Course not found: ${courseId}`);
     return null;
   } catch (error) {
@@ -251,14 +257,14 @@ export const searchCourses = async (searchTerm: string): Promise<Course[]> => {
     // For production, consider using Algolia or Firebase Extensions
     const allCourses = await fetchAllCourses();
     const searchLower = searchTerm.toLowerCase();
-    
-    const filteredCourses = allCourses.filter(course => 
+
+    const filteredCourses = allCourses.filter(course =>
       course.title.toLowerCase().includes(searchLower) ||
       course.description.toLowerCase().includes(searchLower) ||
       course.tags.some(tag => tag.toLowerCase().includes(searchLower)) ||
       course.instructor.name.toLowerCase().includes(searchLower)
     );
-    
+
     console.log(`Found ${filteredCourses.length} courses matching: "${searchTerm}"`);
     return filteredCourses;
   } catch (error) {
@@ -273,7 +279,7 @@ export const searchCourses = async (searchTerm: string): Promise<Course[]> => {
 export const createCourse = async (courseData: Omit<Course, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> => {
   try {
     const coursesRef = collection(db, COURSES_COLLECTION);
-    
+
     const newCourse = {
       ...courseData,
       rating: courseData.rating || 0,
@@ -284,7 +290,7 @@ export const createCourse = async (courseData: Omit<Course, 'id' | 'createdAt' |
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     };
-    
+
     const docRef = await addDoc(coursesRef, newCourse);
     console.log(`Course created with ID: ${docRef.id}`);
     return docRef.id;
@@ -337,7 +343,7 @@ export const expressInterest = async (
 ): Promise<string> => {
   try {
     const interestsRef = collection(db, INTERESTS_COLLECTION);
-    
+
     // Check if user already expressed interest
     const existingQuery = query(
       interestsRef,
@@ -345,12 +351,12 @@ export const expressInterest = async (
       where('userId', '==', user.uid)
     );
     const existingSnap = await getDocs(existingQuery);
-    
+
     if (!existingSnap.empty) {
       console.log('User already expressed interest in this course');
       return existingSnap.docs[0].id;
     }
-    
+
     const interest: Omit<CourseInterest, 'id'> = {
       courseId: course.id,
       courseName: course.title,
@@ -363,9 +369,9 @@ export const expressInterest = async (
       createdAt: serverTimestamp() as Timestamp,
       updatedAt: serverTimestamp() as Timestamp,
     };
-    
+
     const docRef = await addDoc(interestsRef, interest);
-    
+
     // Increment total students count on course
     const courseRef = doc(db, COURSES_COLLECTION, course.id);
     const courseSnap = await getDoc(courseRef);
@@ -376,7 +382,7 @@ export const expressInterest = async (
         updatedAt: serverTimestamp(),
       });
     }
-    
+
     console.log(`Interest recorded with ID: ${docRef.id}`);
     return docRef.id;
   } catch (error) {
@@ -396,17 +402,17 @@ export const getUserInterests = async (userId: string): Promise<CourseInterest[]
       where('userId', '==', userId),
       orderBy('createdAt', 'desc')
     );
-    
+
     const querySnapshot = await getDocs(q);
     const interests: CourseInterest[] = [];
-    
+
     querySnapshot.forEach((doc) => {
       interests.push({
         id: doc.id,
         ...doc.data()
       } as CourseInterest);
     });
-    
+
     console.log(`Fetched ${interests.length} interests for user: ${userId}`);
     return interests;
   } catch (error) {
@@ -422,17 +428,17 @@ export const getAllInterests = async (): Promise<CourseInterest[]> => {
   try {
     const interestsRef = collection(db, INTERESTS_COLLECTION);
     const q = query(interestsRef, orderBy('createdAt', 'desc'));
-    
+
     const querySnapshot = await getDocs(q);
     const interests: CourseInterest[] = [];
-    
+
     querySnapshot.forEach((doc) => {
       interests.push({
         id: doc.id,
         ...doc.data()
       } as CourseInterest);
     });
-    
+
     console.log(`Fetched ${interests.length} total interests`);
     return interests;
   } catch (error) {
@@ -445,7 +451,7 @@ export const getAllInterests = async (): Promise<CourseInterest[]> => {
  * Update interest status (Admin use)
  */
 export const updateInterestStatus = async (
-  interestId: string, 
+  interestId: string,
   status: CourseInterest['status']
 ): Promise<void> => {
   try {
@@ -472,7 +478,7 @@ export const checkUserInterest = async (userId: string, courseId: string): Promi
       where('courseId', '==', courseId),
       where('userId', '==', userId)
     );
-    
+
     const querySnapshot = await getDocs(q);
     return !querySnapshot.empty;
   } catch (error) {
@@ -488,26 +494,32 @@ export const checkUserInterest = async (userId: string, courseId: string): Promi
  */
 export const fetchCategories = async (): Promise<Category[]> => {
   try {
+    console.log('🔍 Attempting to fetch categories...');
     const categoriesRef = collection(db, CATEGORIES_COLLECTION);
     const querySnapshot = await getDocs(categoriesRef);
     const categories: Category[] = [];
-    
+
     querySnapshot.forEach((doc) => {
       categories.push({
         id: doc.id,
         ...doc.data()
       } as Category);
     });
-    
+
     // If no categories in DB, return defaults
     if (categories.length === 0) {
+      console.log('📝 No categories found in DB, using defaults');
       return getDefaultCategories();
     }
-    
-    console.log(`Fetched ${categories.length} categories`);
+
+    console.log(`✅ Fetched ${categories.length} categories successfully`);
     return categories;
   } catch (error) {
-    console.error('Error fetching categories:', error);
+    console.error('❌ Error fetching categories:', error);
+    if (error instanceof Error) {
+      console.error('Error details:', error.message);
+    }
+    console.log('📝 Returning default categories due to error');
     return getDefaultCategories();
   }
 };

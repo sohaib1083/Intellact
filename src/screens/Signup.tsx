@@ -1,7 +1,8 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {Platform, Dimensions, ScrollView, Modal as RNModal} from 'react-native';
+import {Platform, Dimensions, ScrollView, Modal as RNModal, View} from 'react-native';
 import {useNavigation} from '@react-navigation/core';
 import Animated, { FadeInDown, FadeInUp, ZoomIn } from 'react-native-reanimated';
+import { LinearGradient } from 'expo-linear-gradient';
 
 import {useTheme, useAuth} from '../hooks/';
 import * as regex from '../constants/regex';
@@ -102,13 +103,29 @@ const Signup = () => {
 
   return (
     <Block safe flex={1}>
-      <Block flex={1} gradient={gradients.primary}>
+      <LinearGradient
+        colors={['#4F46E5', '#7C3AED', '#6D28D9']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={{ flex: 1 }}
+      >
+        {/* Decorative circles */}
+        <View style={{
+          position: 'absolute', top: -height * 0.06, left: -width * 0.12,
+          width: width * 0.45, height: width * 0.45, borderRadius: width * 0.225,
+          backgroundColor: 'rgba(255,255,255,0.05)',
+        }} />
+        <View style={{
+          position: 'absolute', bottom: height * 0.15, right: -width * 0.1,
+          width: width * 0.3, height: width * 0.3, borderRadius: width * 0.15,
+          backgroundColor: 'rgba(255,255,255,0.03)',
+        }} />
         <ScrollView 
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             flexGrow: 1,
             paddingHorizontal: sizes.padding,
-            paddingTop: isSmallScreen ? height * 0.08 : height * 0.1,
+            paddingTop: isSmallScreen ? height * 0.06 : height * 0.08,
             paddingBottom: sizes.padding,
           }}>
           
@@ -116,17 +133,24 @@ const Signup = () => {
           <Animated.View entering={FadeInDown.duration(600)}>
             <Block flex={0} align="center" marginBottom={sizes.l}>
               <Text h1 center white bold style={{
-                fontSize: isSmallScreen ? 26 : 30,
-                marginBottom: 8
+                fontSize: isSmallScreen ? 26 : 32,
+                marginBottom: 8,
+                letterSpacing: -0.5,
               }}>
                 Join Intellact
               </Text>
-              <Text h5 center white semibold style={{
-                opacity: 0.9,
-                fontSize: isSmallScreen ? 15 : 17,
+              <View style={{
+                backgroundColor: 'rgba(255,255,255,0.15)',
+                paddingHorizontal: 16,
+                paddingVertical: 6,
+                borderRadius: 16,
               }}>
-                Create your account to start learning
-              </Text>
+                <Text center white semibold style={{
+                  fontSize: isSmallScreen ? 13 : 14,
+                }}>
+                  Create your account to start learning
+                </Text>
+              </View>
             </Block>
           </Animated.View>
 
@@ -135,15 +159,17 @@ const Signup = () => {
             <Block flex={1}>
               <Block
                 color={colors.card}
-                radius={20}
+                radius={24}
                 padding={sizes.padding}
                 shadow={!isAndroid}
                 style={{
-                  elevation: 12,
-                  shadowColor: '#000',
-                  shadowOffset: {width: 0, height: 6},
-                  shadowOpacity: 0.15,
-                  shadowRadius: 12,
+                  elevation: 16,
+                  shadowColor: 'rgba(0,0,0,0.3)',
+                  shadowOffset: {width: 0, height: 8},
+                  shadowOpacity: 0.2,
+                  shadowRadius: 24,
+                  borderWidth: 1,
+                  borderColor: 'rgba(79,70,229,0.08)',
                 }}>
                 
                 <Text h4 semibold marginBottom={sizes.l} style={{
@@ -277,7 +303,7 @@ const Signup = () => {
             </Block>
           </Animated.View>
         </ScrollView>
-      </Block>
+      </LinearGradient>
       
       {/* Full-screen modal overlay */}
       <RNModal

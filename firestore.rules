@@ -1,0 +1,14 @@
+// TEMPORARY DEVELOPMENT RULES - VERY PERMISSIVE
+// Copy these rules to your Firebase Console -> Firestore Database -> Rules
+// ⚠️ WARNING: These rules allow anyone to read/write. Use only for development!
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // TEMPORARY: Allow all reads and writes for development
+    // TODO: Restrict these rules before going to production
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}

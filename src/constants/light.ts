@@ -6,59 +6,59 @@ import {
   ThemeSpacing,
 } from './types';
 
-import {THEME as commonTheme} from './theme';
+import { THEME as commonTheme } from './theme';
 
 export const COLORS: ThemeColors = {
   // default text color
-  text: '#252F40',
+  text: '#1A1D2E',
 
-  // base colors - Intellact Brand Colors
-  /** UI color for #primary - Intellact Brand Greyish Blue */
-  primary: '#4A6572',
+  // base colors - Intellact Premium Brand Colors
+  /** UI color for #primary - Deep Indigo */
+  primary: '#4F46E5',
   /** UI color for #secondary */
-  secondary: '#627594',
+  secondary: '#7C3AED',
   /** UI color for #tertiary */
-  tertiary: '#344955',
+  tertiary: '#3730A3',
 
   // non-colors
-  black: '#252F40',
+  black: '#1A1D2E',
   white: '#FFFFFF',
 
-  dark: '#1A1F33',
-  light: '#F4F5F7',
+  dark: '#0F1121',
+  light: '#F5F7FF',
 
   // gray variations
   /** UI color for #gray */
-  gray: '#A7A8AE',
+  gray: '#9CA3AF',
 
   // colors variations
   /** UI color for #danger */
-  danger: '#EA0606',
+  danger: '#EF4444',
   /** UI color for #warning */
-  warning: '#FFC107',
+  warning: '#F59E0B',
   /** UI color for #success */
-  success: '#82D616',
+  success: '#10B981',
   /** UI color for #info */
-  info: '#17C1E8',
+  info: '#06B6D4',
 
   /** UI colors for navigation & card */
   card: '#FFFFFF',
-  background: '#F8F9FA',
+  background: '#F5F7FF',
 
   /** UI color for shadowColor */
-  shadow: '#000000',
-  overlay: 'rgba(0,0,0,0.3)',
+  shadow: '#4F46E5',
+  overlay: 'rgba(15,17,33,0.4)',
 
   /** UI color for input borderColor on focus */
-  focus: '#4A6572',
-  input: '#252F40',
+  focus: '#4F46E5',
+  input: '#1A1D2E',
 
   /** UI color for switch checked/active color */
-  switchOn: '#4A6572',
-  switchOff: '#E9ECEF',
+  switchOn: '#4F46E5',
+  switchOff: '#E5E7EB',
 
   /** UI color for checkbox icon checked/active color */
-  checkbox: ['#4A6572', '#344955'],
+  checkbox: ['#4F46E5', '#7C3AED'],
   checkboxIcon: '#FFFFFF',
 
   /** social colors */
@@ -67,33 +67,33 @@ export const COLORS: ThemeColors = {
   dribbble: '#EA4C89',
 
   /** icon tint color */
-  icon: '#4A6572',
+  icon: '#4F46E5',
 
   /** blur tint color */
   blurTint: 'light',
 
   /** product link color */
-  link: '#4A6572',
+  link: '#4F46E5',
 };
 
 export const GRADIENTS: ThemeGradients = {
-  primary: ['#4A6572', '#344955'], // Intellact brand gradient - greyish blue
-  secondary: ['#627594', '#8392AB'],
-  info: ['#21D4FD', '#17C1E8'],
-  success: ['#98EC2D', '#17AD37'],
-  warning: ['#FBCF33', '#F53939'],
-  danger: ['#FF667C', '#EA0606'],
+  primary: ['#4F46E5', '#7C3AED'], // Premium indigo to purple
+  secondary: ['#7C3AED', '#A78BFA'],
+  info: ['#06B6D4', '#22D3EE'],
+  success: ['#10B981', '#34D399'],
+  warning: ['#F59E0B', '#FBBF24'],
+  danger: ['#EF4444', '#F87171'],
 
-  light: ['#EBEFF4', '#CED4DA'],
-  dark: ['#3A416F', '#141727'],
+  light: ['#F5F7FF', '#EDE9FE'],
+  dark: ['#1A1D2E', '#0F1121'],
 
-  white: [String(COLORS.white), '#EBEFF4'],
-  black: [String(COLORS.black), '#141727'],
+  white: [String(COLORS.white), '#F5F7FF'],
+  black: [String(COLORS.black), '#0F1121'],
 
-  divider: ['rgba(255,255,255,0.3)', 'rgba(102, 116, 142, 0.6)'],
+  divider: ['rgba(255,255,255,0.3)', 'rgba(79, 70, 229, 0.2)'],
   menu: [
     'rgba(255, 255, 255, 0.2)',
-    'rgba(112, 125, 149, 0.5)',
+    'rgba(79, 70, 229, 0.15)',
     'rgba(255, 255, 255, 0.2)',
   ],
 };
@@ -184,5 +184,5 @@ export const THEME: ITheme = {
   ...commonTheme,
   colors: COLORS,
   gradients: GRADIENTS,
-  sizes: {...SIZES, ...commonTheme.sizes, ...SPACING},
+  sizes: { ...SIZES, ...commonTheme.sizes, ...SPACING },
 };

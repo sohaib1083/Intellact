@@ -26,6 +26,7 @@ import Animated, {
   Extrapolation,
 } from 'react-native-reanimated';
 
+import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme, useAuth } from '../hooks/';
 import { Block, Image } from '../components/';
 import {
@@ -48,12 +49,14 @@ const isSmallScreen = height < 700;
 const isVerySmallScreen = height < 600;
 
 const CATEGORY_COLORS: { [key: string]: string } = {
-  all: '#6366f1',
-  development: '#3b82f6',
-  business: '#10b981',
-  design: '#8b5cf6',
-  marketing: '#f59e0b',
-  default: '#6366f1',
+  all: '#4F46E5',
+  development: '#3B82F6',
+  business: '#10B981',
+  design: '#8B5CF6',
+  marketing: '#F59E0B',
+  'it & software': '#06B6D4',
+  personal: '#EC4899',
+  default: '#4F46E5',
 };
 
 const getCategoryColor = (categoryId: string): string => {
@@ -65,7 +68,7 @@ const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
 const Home = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
-  const { user } = useAuth();
+  const { user, userProfile } = useAuth();
   const { colors, sizes } = useTheme();
   const insets = useSafeAreaInsets();
 
@@ -175,6 +178,7 @@ const Home = () => {
   };
 
   const getDisplayName = () => {
+    if (userProfile?.name) return userProfile.name;
     if (user?.displayName) return user.displayName;
     if (user?.email) return user.email.split('@')[0];
     return 'Learner';
@@ -194,10 +198,10 @@ const Home = () => {
           style={{
             width: cardWidth,
             backgroundColor: colors.white,
-            borderRadius: 16,
+            borderRadius: 20,
             overflow: 'hidden',
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 4 },
+            shadowColor: '#4F46E5',
+            shadowOffset: { width: 0, height: 6 },
             shadowOpacity: 0.1,
             shadowRadius: 12,
             elevation: 5,
@@ -355,34 +359,56 @@ const Home = () => {
           }
         >
           <Animated.View entering={FadeInDown.duration(500)}>
-            <Block
-              paddingHorizontal={horizontalPadding}
-              paddingBottom={sizes.l}
+            <LinearGradient
+              colors={['#4F46E5', '#7C3AED']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
               style={{
+                paddingHorizontal: horizontalPadding,
+                paddingBottom: sizes.l,
                 paddingTop: insets.top + (isVerySmallScreen ? sizes.sm : sizes.m),
-                backgroundColor: colors.primary,
                 borderBottomLeftRadius: 28,
                 borderBottomRightRadius: 28,
               }}
             >
-              <Block marginBottom={sizes.m}>
-                <RNText style={{ fontSize: isVerySmallScreen ? 13 : 14, color: 'rgba(255,255,255,0.7)', marginBottom: 4, fontWeight: '500' }}>
-                  Welcome back,
-                </RNText>
-                <RNText style={{ fontSize: headerTitleSize, fontWeight: '800', color: '#FFFFFF', letterSpacing: -0.5 }}>
-                  {getDisplayName()}
-                </RNText>
+              <Block row align="center" justify="space-between" marginBottom={sizes.m}>
+                <Block>
+                  <RNText style={{ fontSize: isVerySmallScreen ? 13 : 14, color: 'rgba(255,255,255,0.7)', marginBottom: 4, fontWeight: '500' }}>
+                    Welcome back 👋
+                  </RNText>
+                  <RNText style={{ fontSize: headerTitleSize, fontWeight: '800', color: '#FFFFFF', letterSpacing: -0.5 }}>
+                    {getDisplayName()}
+                  </RNText>
+                </Block>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('Profile' as never)}
+                  activeOpacity={0.8}
+                  style={{
+                    width: 44,
+                    height: 44,
+                    borderRadius: 22,
+                    backgroundColor: 'rgba(255,255,255,0.2)',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    borderWidth: 2,
+                    borderColor: 'rgba(255,255,255,0.3)',
+                  }}
+                >
+                  <RNText style={{ fontSize: 18, color: '#FFFFFF', fontWeight: '700' }}>
+                    {getDisplayName().charAt(0).toUpperCase()}
+                  </RNText>
+                </TouchableOpacity>
               </Block>
               <Block
                 row
                 align="center"
                 color={'rgba(255,255,255,0.15)'}
-                radius={8}
+                radius={14}
                 paddingVertical={Platform.OS === 'ios' ? sizes.s : 4}
                 style={{ borderWidth: 1, borderColor: searchQuery ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.1)' }}
               >
                 <RNText style={{ fontSize: 18, color: 'rgba(255,255,255,0.8)', margin: 10, marginLeft: sizes.sm }}>
-                  {isSearching ? '...' : '⌕'}
+                  {isSearching ? '...' : '🔍'}
                 </RNText>
                 <TextInput
                   value={searchQuery}
@@ -392,12 +418,12 @@ const Home = () => {
                   style={{ flex: 1, fontSize: isVerySmallScreen ? 14 : 15, color: '#FFFFFF', paddingVertical: Platform.OS === 'ios' ? 10 : 8, paddingHorizontal: 0, }}
                 />
                 {searchQuery.length > 0 && (
-                  <TouchableOpacity onPress={() => { setSearchQuery(''); handleCategorySelect(selectedCategory); }} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                  <TouchableOpacity onPress={() => { setSearchQuery(''); handleCategorySelect(selectedCategory); }} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} style={{ marginRight: 12 }}>
                     <RNText style={{ fontSize: 20, color: 'rgba(255,255,255,0.7)', fontWeight: '300' }}>×</RNText>
                   </TouchableOpacity>
                 )}
               </Block>
-            </Block>
+            </LinearGradient>
           </Animated.View>
 
           <Animated.View entering={FadeInUp.delay(150).duration(400)}>
@@ -415,21 +441,22 @@ const Home = () => {
                         <Block
                           row
                           align="center"
-                          color={isSelected ? colors.primary : colors.white}
-                          radius={14}
+                          radius={20}
                           paddingHorizontal={sizes.sm}
                           paddingVertical={isVerySmallScreen ? 10 : 12}
                           style={{
-                            borderWidth: 0,
-                            shadowColor: isSelected ? colors.primary : '#000',
+                            backgroundColor: isSelected ? categoryColor : colors.white,
+                            borderWidth: isSelected ? 0 : 1,
+                            borderColor: 'rgba(0,0,0,0.06)',
+                            shadowColor: isSelected ? categoryColor : '#000',
                             shadowOffset: { width: 0, height: isSelected ? 4 : 2 },
-                            shadowOpacity: isSelected ? 0.3 : 0.08,
-                            shadowRadius: isSelected ? 8 : 4,
+                            shadowOpacity: isSelected ? 0.35 : 0.06,
+                            shadowRadius: isSelected ? 10 : 4,
                             elevation: isSelected ? 6 : 2,
                           }}
                         >
-                          <Block style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: isSelected ? '#FFFFFF' : categoryColor, marginRight: 10 }} />
-                          <RNText style={{ fontSize: isVerySmallScreen ? 13 : 14, fontWeight: isSelected ? '700' : '600', color: isSelected ? '#FFFFFF' : colors.text }}>
+                          <Block style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: isSelected ? '#FFFFFF' : categoryColor, marginRight: 8 }} />
+                          <RNText style={{ fontSize: isVerySmallScreen ? 13 : 14, fontWeight: isSelected ? '700' : '500', color: isSelected ? '#FFFFFF' : colors.text }}>
                             {category.name}
                           </RNText>
                         </Block>
@@ -506,9 +533,9 @@ const Home = () => {
                       <Block
                         row
                         color={colors.white}
-                        radius={16}
+                        radius={20}
                         marginBottom={sizes.sm}
-                        style={{ overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.08, shadowRadius: 12, elevation: 4 }}
+                        style={{ overflow: 'hidden', borderWidth: 1, borderColor: 'rgba(79,70,229,0.06)', shadowColor: '#4F46E5', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.08, shadowRadius: 16, elevation: 4 }}
                       >
                         <Block style={{ width: isVerySmallScreen ? 90 : 100, height: isVerySmallScreen ? 90 : 100, backgroundColor: colors.card, position: 'relative' }}>
                           {course.thumbnail ? (

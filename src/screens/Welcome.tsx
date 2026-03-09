@@ -9,215 +9,288 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Video, ResizeMode } from 'expo-av';
+import { LinearGradient } from 'expo-linear-gradient';
 
 import { useTheme } from '../hooks';
 import { Block, Button, Text } from '../components';
 
 const { height, width } = Dimensions.get('window');
-const isAndroid = Platform.OS === 'android';
 
-// Optimized screen breakpoints for 430x930
+// Responsive breakpoints
 const isCompact = height < 700;
 const isStandard = height >= 700 && height < 850;
 const isLarge = height >= 850;
 
 export default function Welcome() {
   const navigation = useNavigation();
-  const { gradients, colors, sizes } = useTheme();
+  const { colors, sizes } = useTheme();
 
-  // Premium animations
-  const fade = useRef(new Animated.Value(0)).current;
-  const slide = useRef(new Animated.Value(20)).current;
-  const scale = useRef(new Animated.Value(0.94)).current;
+  // Staggered animations
+  const logoFade = useRef(new Animated.Value(0)).current;
+  const logoScale = useRef(new Animated.Value(0.8)).current;
+  const titleFade = useRef(new Animated.Value(0)).current;
+  const titleSlide = useRef(new Animated.Value(30)).current;
+  const subtitleFade = useRef(new Animated.Value(0)).current;
+  const descFade = useRef(new Animated.Value(0)).current;
+  const buttonFade = useRef(new Animated.Value(0)).current;
+  const buttonSlide = useRef(new Animated.Value(40)).current;
 
   useEffect(() => {
+    // Logo entrance
     Animated.parallel([
-      Animated.spring(scale, {
+      Animated.spring(logoScale, {
         toValue: 1,
-        damping: 15,
-        stiffness: 130,
+        damping: 12,
+        stiffness: 100,
         useNativeDriver: true,
       }),
-      Animated.timing(fade, {
+      Animated.timing(logoFade, {
         toValue: 1,
-        duration: 650,
-        useNativeDriver: true,
-      }),
-      Animated.timing(slide, {
-        toValue: 0,
-        duration: 650,
+        duration: 600,
         useNativeDriver: true,
       }),
     ]).start();
+
+    // Title entrance (staggered)
+    setTimeout(() => {
+      Animated.parallel([
+        Animated.timing(titleFade, { toValue: 1, duration: 500, useNativeDriver: true }),
+        Animated.spring(titleSlide, { toValue: 0, damping: 15, stiffness: 120, useNativeDriver: true }),
+      ]).start();
+    }, 200);
+
+    // Subtitle
+    setTimeout(() => {
+      Animated.timing(subtitleFade, { toValue: 1, duration: 500, useNativeDriver: true }).start();
+    }, 400);
+
+    // Description
+    setTimeout(() => {
+      Animated.timing(descFade, { toValue: 1, duration: 500, useNativeDriver: true }).start();
+    }, 550);
+
+    // Buttons
+    setTimeout(() => {
+      Animated.parallel([
+        Animated.timing(buttonFade, { toValue: 1, duration: 500, useNativeDriver: true }),
+        Animated.spring(buttonSlide, { toValue: 0, damping: 15, stiffness: 100, useNativeDriver: true }),
+      ]).start();
+    }, 650);
   }, []);
 
-  // Optimized for 430x930 - Perfect sizing
-  const logoSize = isLarge ? 90 : isStandard ? 80 : 70;
-  
-  // Perfect spacing alignment
-  const topSpacing = isLarge ? sizes.l : isStandard ? sizes.m : sizes.sm;
-  const logoMarginBottom = isLarge ? sizes.xl : isStandard ? sizes.l : sizes.m;
-  const titleMarginBottom = isLarge ? sizes.l : isStandard ? sizes.m : sizes.sm;
-  const descMarginBottom = isLarge ? sizes.m : sizes.sm;
+  const logoSize = isLarge ? 100 : isStandard ? 88 : 76;
 
   return (
-    <Block safe flex={1}>
-      <StatusBar
-        barStyle="light-content"
-        backgroundColor="transparent"
-        translucent
-      />
+    <View style={{ flex: 1 }}>
+      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
 
-      <Block flex={1} gradient={gradients.primary}>
-        <Block
-          flex={1}
-          paddingHorizontal={sizes.padding}
-          paddingTop={topSpacing}
-          paddingBottom={sizes.padding}
-        >
+      <LinearGradient
+        colors={['#4F46E5', '#7C3AED', '#6D28D9']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={{ flex: 1 }}
+      >
+        {/* Decorative circles */}
+        <View style={{
+          position: 'absolute', top: -height * 0.12, right: -width * 0.2,
+          width: width * 0.7, height: width * 0.7, borderRadius: width * 0.35,
+          backgroundColor: 'rgba(255,255,255,0.06)',
+        }} />
+        <View style={{
+          position: 'absolute', bottom: -height * 0.08, left: -width * 0.15,
+          width: width * 0.5, height: width * 0.5, borderRadius: width * 0.25,
+          backgroundColor: 'rgba(255,255,255,0.04)',
+        }} />
+        <View style={{
+          position: 'absolute', top: height * 0.35, left: -width * 0.1,
+          width: width * 0.3, height: width * 0.3, borderRadius: width * 0.15,
+          backgroundColor: 'rgba(255,255,255,0.03)',
+        }} />
 
-          {/* LOGO - Perfectly Centered */}
-          <Block align="center" marginTop={0} marginBottom={logoMarginBottom}>
-            <Animated.View style={{ transform: [{ scale }] }}>
-              <View
-                style={{
-                  width: logoSize,
-                  height: logoSize,
-                  borderRadius: logoSize / 2,
-                  overflow: 'hidden',
-                  shadowColor: '#000',
-                  shadowOpacity: 0.3,
-                  shadowRadius: 10,
-                  shadowOffset: { width: 0, height: 4 },
-                  elevation: 8,
-                  margin: 100
-                }}
-              >
-                <Video
-                  source={require('../assets/icons/presentation.mp4')}
-                  style={{ width: logoSize, height: logoSize }}
-                  resizeMode={ResizeMode.COVER}
-                  shouldPlay
-                  isLooping
-                  isMuted
-                />
-              </View>
-            </Animated.View>
-          </Block>
+        <View style={{
+          flex: 1,
+          paddingHorizontal: isCompact ? 24 : 32,
+          paddingTop: isLarge ? height * 0.12 : isStandard ? height * 0.1 : height * 0.08,
+          paddingBottom: isCompact ? 24 : 36,
+        }}>
+          {/* Logo */}
+          <Animated.View style={{
+            alignItems: 'center',
+            marginBottom: isLarge ? 40 : isStandard ? 32 : 24,
+            opacity: logoFade,
+            transform: [{ scale: logoScale }],
+          }}>
+            <View style={{
+              width: logoSize,
+              height: logoSize,
+              borderRadius: logoSize * 0.3,
+              overflow: 'hidden',
+              backgroundColor: 'rgba(255,255,255,0.15)',
+              borderWidth: 2,
+              borderColor: 'rgba(255,255,255,0.2)',
+            }}>
+              <Video
+                source={require('../assets/icons/presentation.mp4')}
+                style={{ width: logoSize, height: logoSize }}
+                resizeMode={ResizeMode.COVER}
+                shouldPlay
+                isLooping
+                isMuted
+              />
+            </View>
+          </Animated.View>
 
-          {/* HERO CONTENT - Always Visible */}
-          <Block>
-            {/* Title Section */}
-            <Block align="center" marginBottom={titleMarginBottom}>
-              <RNText
-                style={{
-                  fontSize: isLarge ? 44 : isStandard ? 40 : 34,
-                  color: '#FFFFFF',
-                  fontWeight: 'bold',
-                  letterSpacing: 1.2,
-                  marginBottom: sizes.xs,
-                  textAlign: 'center',
-                  textShadowColor: 'rgba(0, 0, 0, 0.25)',
-                  textShadowOffset: { width: 0, height: 2 },
-                  textShadowRadius: 4,
-                }}
-              >
-                Intellact
-              </RNText>
+          {/* Title */}
+          <Animated.View style={{
+            alignItems: 'center',
+            marginBottom: isLarge ? 16 : 12,
+            opacity: titleFade,
+            transform: [{ translateY: titleSlide }],
+          }}>
+            <RNText style={{
+              fontSize: isLarge ? 48 : isStandard ? 42 : 36,
+              color: '#FFFFFF',
+              fontWeight: '800',
+              letterSpacing: -0.5,
+              textAlign: 'center',
+            }}>
+              Intellact
+            </RNText>
+          </Animated.View>
 
-              <RNText
-                style={{
-                  fontSize: isLarge ? 18 : isStandard ? 17 : 16,
-                  color: '#FFFFFF',
-                  opacity: 0.9,
-                  fontWeight: '500',
-                  letterSpacing: 0.4,
-                  textAlign: 'center',
-                }}
-              >
+          {/* Subtitle chip */}
+          <Animated.View style={{
+            alignItems: 'center',
+            marginBottom: isLarge ? 28 : 20,
+            opacity: subtitleFade,
+          }}>
+            <View style={{
+              backgroundColor: 'rgba(255,255,255,0.15)',
+              paddingHorizontal: 20,
+              paddingVertical: 8,
+              borderRadius: 20,
+              borderWidth: 1,
+              borderColor: 'rgba(255,255,255,0.2)',
+            }}>
+              <RNText style={{
+                fontSize: isLarge ? 15 : 14,
+                color: '#FFFFFF',
+                fontWeight: '600',
+                letterSpacing: 1.5,
+                textTransform: 'uppercase',
+              }}>
                 Smart Learning Platform
               </RNText>
-            </Block>
+            </View>
+          </Animated.View>
 
-            {/* Description Section */}
-            <Block align="center" marginBottom={descMarginBottom}>
-              <RNText
-                style={{
-                  fontSize: isLarge ? 15.5 : 15,
-                  lineHeight: 22,
-                  color: '#FFFFFF',
-                  opacity: 0.88,
-                  width: Math.min(width - 80, 320),
-                  letterSpacing: 0.3,
-                  textAlign: 'center',
-                }}
-              >
-                Transform your career with cutting-edge courses and expert guidance.
-              </RNText>
-            </Block>
-          </Block>
+          {/* Description */}
+          <Animated.View style={{ alignItems: 'center', opacity: descFade }}>
+            <RNText style={{
+              fontSize: isLarge ? 17 : 16,
+              lineHeight: isLarge ? 26 : 24,
+              color: 'rgba(255,255,255,0.85)',
+              textAlign: 'center',
+              maxWidth: 300,
+              fontWeight: '400',
+            }}>
+              Transform your career with cutting-edge courses and expert guidance from industry leaders.
+            </RNText>
+          </Animated.View>
 
-          {/* Flexible Spacer - Pushes buttons to bottom */}
-          <Block flex={1} style={{ minHeight: sizes.sm }} />
+          {/* Spacer */}
+          <View style={{ flex: 1 }} />
 
-          {/* CTA BUTTONS - Professional Design */}
-          <Block marginBottom={sizes.sm}>
+          {/* Feature pills */}
+          <Animated.View style={{
+            opacity: descFade,
+            flexDirection: 'row',
+            justifyContent: 'center',
+            flexWrap: 'wrap',
+            gap: 8,
+            marginBottom: isLarge ? 36 : 28,
+          }}>
+            {['Expert Instructors', 'Self-Paced', 'Certificates'].map((feature, i) => (
+              <View key={i} style={{
+                backgroundColor: 'rgba(255,255,255,0.1)',
+                paddingHorizontal: 14,
+                paddingVertical: 6,
+                borderRadius: 16,
+                borderWidth: 1,
+                borderColor: 'rgba(255,255,255,0.15)',
+              }}>
+                <RNText style={{ fontSize: 12, color: 'rgba(255,255,255,0.9)', fontWeight: '500' }}>
+                  {feature}
+                </RNText>
+              </View>
+            ))}
+          </Animated.View>
+
+          {/* CTA Buttons */}
+          <Animated.View style={{
+            opacity: buttonFade,
+            transform: [{ translateY: buttonSlide }],
+          }}>
+            {/* Primary CTA */}
             <Button
               color={colors.white}
               onPress={() => navigation.navigate('Signup' as never)}
-              marginBottom={sizes.sm}
+              marginBottom={isCompact ? 10 : 14}
               style={{
-                height: 56,
+                height: isCompact ? 52 : 58,
                 borderRadius: 16,
                 shadowColor: '#000',
-                shadowOpacity: 0.2,
-                shadowRadius: 12,
-                shadowOffset: { width: 0, height: 4 },
-                elevation: 8,
+                shadowOpacity: 0.25,
+                shadowRadius: 16,
+                shadowOffset: { width: 0, height: 6 },
+                elevation: 10,
               }}
             >
-              <Text
-                bold
-                style={{
-                  color: colors.primary,
-                  fontSize: 15.5,
-                  letterSpacing: 0.8,
-                  textTransform: 'uppercase',
-                  fontWeight: '700',
-                }}
-              >
-                Start Learning Free
-              </Text>
+              <RNText style={{
+                color: '#4F46E5',
+                fontSize: 16,
+                letterSpacing: 0.5,
+                fontWeight: '700',
+              }}>
+                Get Started Free
+              </RNText>
             </Button>
 
+            {/* Secondary CTA */}
             <Button
               outlined
               onPress={() => navigation.navigate('Login' as never)}
               style={{
-                height: 56,
+                height: isCompact ? 52 : 58,
                 borderRadius: 16,
                 borderWidth: 2,
-                borderColor: colors.white,
-                backgroundColor: 'rgba(255,255,255,0.13)',
+                borderColor: 'rgba(255,255,255,0.4)',
+                backgroundColor: 'rgba(255,255,255,0.08)',
               }}
             >
-              <Text
-                white
-                bold
-                style={{
-                  fontSize: 15.5,
-                  letterSpacing: 0.8,
-                  textTransform: 'uppercase',
-                  fontWeight: '700',
-                }}
-              >
-                Sign In
-              </Text>
+              <RNText style={{
+                color: '#FFFFFF',
+                fontSize: 16,
+                letterSpacing: 0.5,
+                fontWeight: '600',
+              }}>
+                I Have an Account
+              </RNText>
             </Button>
-          </Block>
 
-        </Block>
-      </Block>
-    </Block>
+            {/* Footer */}
+            <View style={{ alignItems: 'center', marginTop: isCompact ? 14 : 20 }}>
+              <RNText style={{
+                fontSize: 12,
+                color: 'rgba(255,255,255,0.5)',
+                fontWeight: '400',
+              }}>
+                Trusted by thousands of learners
+              </RNText>
+            </View>
+          </Animated.View>
+        </View>
+      </LinearGradient>
+    </View>
   );
 }

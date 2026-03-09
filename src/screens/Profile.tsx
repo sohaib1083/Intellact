@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/core';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 
 import { Block, Button, Image } from '../components/';
 import { useTheme, useAuth } from '../hooks/';
@@ -152,11 +153,17 @@ const Profile = () => {
           keyboardShouldPersistTaps="handled"
         >
           {/* Header with Gradient Background */}
-          <Block
-            gradient={gradients.primary}
-            paddingHorizontal={horizontalPadding}
-            paddingBottom={sizes.xxl}
-            style={{ paddingTop: insets.top + sizes.m }}
+          <LinearGradient
+            colors={['#4F46E5', '#7C3AED']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={{
+              paddingHorizontal: horizontalPadding,
+              paddingBottom: sizes.xxl,
+              paddingTop: insets.top + sizes.m,
+              borderBottomLeftRadius: 32,
+              borderBottomRightRadius: 32,
+            }}
           >
             {/* Profile Info */}
             <Block align="center">
@@ -264,14 +271,16 @@ const Profile = () => {
           <Block paddingHorizontal={horizontalPadding} marginTop={isVerySmallScreen ? -sizes.m : -sizes.xl}>
             <Block
               color={colors.white}
-              radius={isVerySmallScreen ? 16 : 20}
+              radius={isVerySmallScreen ? 16 : 24}
               padding={isVerySmallScreen ? sizes.sm : sizes.l}
               style={{
-                shadowColor: '#000',
-                shadowOpacity: 0.1,
-                shadowOffset: { width: 0, height: 4 },
-                shadowRadius: 15,
-                elevation: 6,
+                shadowColor: '#4F46E5',
+                shadowOpacity: 0.12,
+                shadowOffset: { width: 0, height: 8 },
+                shadowRadius: 24,
+                elevation: 8,
+                borderWidth: 1,
+                borderColor: 'rgba(79,70,229,0.06)',
               }}
             >
               <Block row justify="space-around">
@@ -429,15 +438,15 @@ const Profile = () => {
               {/* Menu Items */}
               <Block
                 color={colors.white}
-                radius={16}
+                radius={20}
                 style={{
-                  shadowColor: '#000',
-                  shadowOpacity: 0.08,
-                  shadowOffset: { width: 0, height: 3 },
-                  shadowRadius: 10,
+                  shadowColor: '#4F46E5',
+                  shadowOpacity: 0.06,
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowRadius: 16,
                   elevation: 3,
                   borderWidth: 1,
-                  borderColor: colors.card,
+                  borderColor: 'rgba(79,70,229,0.06)',
                 }}
               >
                 {section.items.map((item, itemIndex) => (
@@ -522,20 +531,20 @@ const Profile = () => {
             >
               <Block
                 color={isLoggingOut ? colors.card : colors.white}
-                radius={16}
+                radius={20}
                 padding={isVerySmallScreen ? sizes.s : sizes.sm + 2}
                 row
                 align="center"
                 justify="center"
                 style={{
-                  shadowColor: '#ef4444',
+                  shadowColor: '#EF4444',
                   shadowOpacity: 0.15,
-                  shadowOffset: { width: 0, height: 3 },
-                  shadowRadius: 10,
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowRadius: 12,
                   elevation: 3,
                   minHeight: isVerySmallScreen ? 48 : 56,
                   borderWidth: 2,
-                  borderColor: '#ef4444',
+                  borderColor: '#EF4444',
                 }}
               >
                 <RNText
